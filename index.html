@@ -668,29 +668,21 @@
                 if (!rec) return;
 
                 const now = Date.now();
-                const lockMins = scanLockMinutes; // ប្រើប្រាស់នាទីដែល Admin កំណត់
+                const lockMins = scanLockMinutes; 
 
-                // Visual Status Logic (Just UI dimming, full enforcement is on click)
+                // 💎 UI Visual Lock Logic
                 let lockIn = false;
                 let lockOut = false;
-
-                if (rec.inToday && rec.lastAction === 'ចូល') {
-                    lockIn = true; // Locked forever today after IN
-                }
                 
-                if (rec.lastAction === 'ចេញ' && rec.scanOutTimestamp) {
-                    let diffMins = Math.floor((now - rec.scanOutTimestamp) / 60000);
-                    if (diffMins < lockMins) lockIn = true; // Locked 300 mins after OUT
-                }
-
-                if (rec.lastAction === 'ចូល' && rec.scanInTimestamp) {
-                    let diffMins = Math.floor((now - rec.scanInTimestamp) / 60000);
-                    if (diffMins < lockMins) lockOut = true; // Locked 300 mins after IN
-                }
+                let lastScanTime = Math.max(rec.scanInTimestamp || 0, rec.scanOutTimestamp || 0);
                 
-                if (rec.lastAction === 'ចេញ' && rec.scanOutTimestamp) {
-                    let diffMins = Math.floor((now - rec.scanOutTimestamp) / 60000);
-                    if (diffMins < lockMins) lockOut = true; // Locked 300 mins after OUT
+                // Bypass lock completely if lockMins is 0, also ensure diff is not negative
+                if (lockMins > 0 && lastScanTime > 0) {
+                    let diffMins = Math.floor((now - lastScanTime) / 60000);
+                    if (diffMins >= 0 && diffMins < lockMins) {
+                        lockIn = true;
+                        lockOut = true;
+                    }
                 }
 
                 if (lockIn) btnIn.classList.add('opacity-50', 'grayscale');
@@ -786,38 +778,18 @@
             
             const rec = attendanceRecords[id];
             const nowTime = Date.now();
-            const lockMins = scanLockMinutes; // ប្រើប្រាស់នាទីដែល Admin កំណត់
+            const lockMins = scanLockMinutes; 
 
-            // ---- ANTI-SPAM LOCK CHECKING ----
-            if (type === 'ចូល') {
-                if (rec.inToday && rec.lastAction === 'ចូល') {
-                    msg.innerHTML = `<span class='text-red-500'>🔒 អ្នកបានស្កេនចូលរួចហើយ! មិនអាចស្កេនចូលម្តងទៀតបានទេថ្ងៃនេះ។</span>`;
-                    return;
-                }
-                if (rec.lastAction === 'ចេញ' && rec.scanOutTimestamp) {
-                    let diffMins = Math.floor((nowTime - rec.scanOutTimestamp) / 60000);
-                    if (diffMins < lockMins) {
-                        let remaining = lockMins - diffMins;
-                        msg.innerHTML = `<span class='text-yellow-500'>🔒 ជាប់សោរ! អាចស្កេនចូលវិញនៅ ${toKhmerNum(remaining)} នាទីទៀត។</span>`;
-                        return;
-                    }
-                }
-            } else if (type === 'ចេញ') {
-                if (rec.lastAction === 'ចូល' && rec.scanInTimestamp) {
-                    let diffMins = Math.floor((nowTime - rec.scanInTimestamp) / 60000);
-                    if (diffMins < lockMins) {
-                        let remaining = lockMins - diffMins;
-                        msg.innerHTML = `<span class='text-yellow-500'>🔒 ជាប់សោរ! អាចស្កេនចេញបាននៅ ${toKhmerNum(remaining)} នាទីទៀត។</span>`;
-                        return;
-                    }
-                }
-                if (rec.lastAction === 'ចេញ' && rec.scanOutTimestamp) {
-                    let diffMins = Math.floor((nowTime - rec.scanOutTimestamp) / 60000);
-                    if (diffMins < lockMins) {
-                        let remaining = lockMins - diffMins;
-                        msg.innerHTML = `<span class='text-yellow-500'>🔒 ជាប់សោរ! អាចស្កេនចេញម្តងទៀតនៅ ${toKhmerNum(remaining)} នាទីទៀត។</span>`;
-                        return;
-                    }
+            // 💎 Anti-Spam Logic ថ្មី
+            let lastScanTime = Math.max(rec.scanInTimestamp || 0, rec.scanOutTimestamp || 0);
+            
+            // Bypass lock if lockMins is 0, prevent bug if difference is negative
+            if (lockMins > 0 && lastScanTime > 0) {
+                let diffMins = Math.floor((nowTime - lastScanTime) / 60000);
+                if (diffMins >= 0 && diffMins < lockMins) {
+                    let remaining = lockMins - diffMins;
+                    msg.innerHTML = `<span class='text-yellow-500'>🔒 ជាប់សោរ! សូមរង់ចាំ ${toKhmerNum(remaining)} នាទីទៀត។</span>`;
+                    return; // បញ្ឈប់ការស្កេននៅទីនេះ
                 }
             }
             // ---- END LOCK CHECKING ----
@@ -849,7 +821,7 @@
                 attendanceRecords[id].scanInDate = dateStr;
                 attendanceRecords[id].lastAction = 'ចូល';
                 
-                attendanceRecords[id].scanInTimestamp = Date.now(); // Record exact time for 300 min lock
+                attendanceRecords[id].scanInTimestamp = Date.now(); // Record exact time for lock
                 attendanceRecords[id].scanInMins = actualMins;
                 attendanceRecords[id].scanInTimeStr = timeStr;
 
@@ -881,7 +853,7 @@
                 attendanceRecords[id].scanOutDate = dateStr;
                 attendanceRecords[id].lastAction = 'ចេញ';
                 
-                attendanceRecords[id].scanOutTimestamp = Date.now(); // Record exact time for 300 min lock
+                attendanceRecords[id].scanOutTimestamp = Date.now(); // Record exact time for lock
                 
                 let endH = emp.endH !== undefined ? emp.endH : 2;
                 let expectedMins = (endH < 12 ? endH + 24 : endH) * 60 + (emp.endM || 0);
@@ -1359,6 +1331,10 @@
 
                 if (specificScans[e.id]) {
                     let scanTime = new Date(now);
+                    // 💎 Fix: បើកំពុងតេស្តនៅម៉ោងយប់រំលងអធ្រាត្រ ដក១ថ្ងៃចេញដើម្បីកុំឱ្យវាចេញម៉ោងអនាគត
+                    if (now.getHours() < 12) {
+                        scanTime.setDate(scanTime.getDate() - 1);
+                    }
                     scanTime.setHours(specificScans[e.id].h, specificScans[e.id].m, 0, specificScans[e.id].ms || 0);
                     let timeStr = `${String(specificScans[e.id].h).padStart(2, '0')}:${String(specificScans[e.id].m).padStart(2, '0')}`;
 
@@ -1707,6 +1683,7 @@
                 
                 prefilledScans.forEach(p => {
                     let scanTime = new Date(now);
+                    if (now.getHours() < 12) scanTime.setDate(scanTime.getDate() - 1);
                     scanTime.setHours(p.h, p.m, 0, 0); 
                     let timeStr = `${String(p.h).padStart(2, '0')}:${String(p.m).padStart(2, '0')}`;
                     

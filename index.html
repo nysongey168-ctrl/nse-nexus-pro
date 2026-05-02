@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSE NEXUS PRO</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 90,25 90,75 50,95 10,75 10,25' fill='%230b1120' stroke='%2300f6ff' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='35' fill='none' stroke='%238b5cf6' stroke-width='3' stroke-dasharray='8 8'/%3E%3Cpath d='M50 15 L80 35 L80 65 L50 85 L20 65 L20 35 Z' fill='%2300f6ff' fill-opacity='0.2' stroke='%2300f6ff' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%238b5cf6'/%3E%3Cpath d='M50 15 L50 50 M80 65 L50 50 M20 65 L50 50' stroke='%2300f6ff' stroke-width='3'/%3E%3C/svg%3E">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.260.0/lucide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+    
+    <style>
+        :root { --bg-dark: #030712; --neon-cyan: #00f6ff; --neon-violet: #8b5cf6; }
+        body { font-family: 'Battambang', sans-serif; background-color: var(--bg-dark); color: #e2e8f0; background-image: radial-gradient(circle at 50% 0%, rgba(0, 246, 255, 0.05) 0%, transparent 50%), radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.05) 0%, transparent 50%); background-attachment: fixed; overflow-x: hidden; }
+        .font-moul { font-family: 'Moul', serif !important; }
+        .font-tech { font-family: 'Orbitron', sans-serif !important; letter-spacing: 2px; }
+        .text-gradient { background: linear-gradient(135deg, var(--neon-cyan), #3b82f6, var(--neon-violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .border-gradient { position: relative; background: var(--bg-dark); background-clip: padding-box; border: 1px solid transparent; }
+        .border-gradient::before { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; margin: -1px; border-radius: inherit; background: linear-gradient(135deg, var(--neon-cyan), rgba(139,92,246,0.5)); }
+        .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+        .hover-glow:hover { box-shadow: 0 0 20px rgba(0, 246, 255, 0.2); border-color: rgba(0, 246, 255, 0.5); transform: translateY(-2px); transition: all 0.3s; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(var(--neon-cyan), var(--neon-violet)); border-radius: 3px; }
+        .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--neon-cyan); box-shadow: 0 0 20px 2px var(--neon-cyan); animation: scan 3s ease-in-out infinite; display: none; z-index: 10; }
+        .scanning .scanner-line { display: block; }
+        @keyframes scan { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        .editable-input { background: transparent; border-bottom: 1px dashed #4b5563; color: inherit; width: 60px; text-align: right; outline: none; transition: 0.2s; font-family: 'Battambang', sans-serif; }
+        .editable-input:focus { border-bottom-color: var(--neon-cyan); background: rgba(0,246,255,0.05); }
+        
+        .box-perfect-center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .flex-center-row { display: flex; flex-direction: row; align-items: center; justify-content: center; text-align: center; }
+        
+        #verifyOverlay { opacity: 0; pointer-events: none; transition: all 0.3s ease; transform: scale(0.8); }
+        #verifyOverlay.show { opacity: 1; pointer-events: auto; transform: scale(1); z-index: 50; }
+        .success-checkmark { width: 100px; height: 100px; color: #10b981; filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.5)); }
+
+        @media print {
+            body > *:not(#printPreviewModal) { display: none !important; }
+            #printPreviewModal { display: block !important; position: static !important; width: 100% !important; height: auto !important; background: white !important; overflow: visible !important; }
+            #printPreviewModal .no-print { display: none !important; }
+            #printContentArea { box-shadow: none !important; margin: 0 auto !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; border: none !important; background: white !important; }
+            * { color: black !important; text-shadow: none !important; box-shadow: none !important; font-family: 'Battambang', sans-serif !important; }
+            .font-moul { font-family: 'Moul', serif !important; }
+            table { width: 100% !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid black !important; padding: 4px !important; font-size: 11px !important; }
+            .official-header { display: block !important; text-align: center; margin-bottom: 20px; }
+            @page { size: A4 landscape; margin: 10mm; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative">
+
+    <!-- LOGIN MODAL -->
+    <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center glass-panel no-print">
+        <div class="bg-[#0b1120] p-8 rounded-3xl border-gradient w-[90%] max-w-sm text-center shadow-[0_0_50px_rgba(0,246,255,0.1)] relative overflow-hidden box-perfect-center">
+            
+            <div class="absolute top-4 right-4 z-[60]" id="loginLangBtnContainer">
+                <button onclick="toggleLanguage()" class="bg-[#050b14]/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center justify-center gap-2 border border-gray-700 hover:border-cyan-500 transition-all text-xs font-bold shadow-lg">
+                    <span id="langFlagLogin">🇰🇭</span> <span id="langTextLogin">ខ្មែរ</span>
+                </button>
+            </div>
+
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-violet-600 rounded-full mix-blend-screen filter blur-[60px] opacity-30 animate-pulse"></div>
+            <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-cyan-600 rounded-full mix-blend-screen filter blur-[60px] opacity-30 animate-pulse" style="animation-delay: 1s;"></div>
+            
+            <div class="relative w-24 h-24 mx-auto mb-4 box-perfect-center group cursor-pointer hover:scale-110 transition-transform" onclick="downloadLogo()" title="ទាញយកឡូហ្គូ (Download Logo)">
+                <svg class="absolute inset-0 w-full h-full animate-[spin_15s_linear_infinite]" viewBox="0 0 100 100"><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="none" stroke="rgba(0,246,255,0.3)" stroke-width="1"/></svg>
+                <svg class="w-14 h-14 drop-shadow-[0_0_10px_#00f6ff]" viewBox="0 0 100 100"><path d="M50 10 L85 30 L85 70 L50 90 L15 70 L15 30 Z" fill="rgba(0, 246, 255, 0.1)" stroke="#00f6ff" stroke-width="2"/><circle cx="50" cy="50" r="8" fill="#8b5cf6" class="animate-ping"/><path d="M50 10 L50 50 M85 70 L50 50 M15 70 L50 50" stroke="#00f6ff" stroke-width="2"/></svg>
+            </div>
+
+            <h2 class="text-2xl font-bold text-gradient mb-1 tracking-wider uppercase font-tech text-center">NSE NEXUS PRO</h2>
+            <p class="text-[10px] text-gray-400 mb-6 font-bold text-center" data-kh="នី សុងអ៉ី ឆ្ពោះទៅកាន់អនាគតឌីជីថលជាមួយអ្នក" data-en="Ny Songey Moving Toward Digital Future">នី សុងអ៉ី ឆ្ពោះទៅកាន់អនាគតឌីជីថលជាមួយអ្នក</p>
+            
+            <input type="password" id="pinInput" data-kh="បញ្ចូលកូដសម្ងាត់..." data-en="Enter PIN Code..." placeholder="បញ្ចូលកូដសម្ងាត់..." class="w-full bg-[#050b14] border border-gray-800 rounded-xl py-3.5 px-4 text-center text-xl text-cyan-300 focus:outline-none focus:border-cyan-500 mb-5 font-bold tracking-widest">
+            <button id="btnLoginAction" data-kh="ចូលប្រព័ន្ធគ្រប់គ្រង" data-en="Login" class="w-full bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white font-bold py-3.5 rounded-xl transition-all mb-4 text-base flex items-center justify-center">ចូលប្រព័ន្ធគ្រប់គ្រង</button>
+            <div class="flex items-center justify-center gap-4 mb-4 w-full"><div class="h-px bg-gray-800 flex-1"></div><span class="text-xs text-gray-500 font-bold" data-kh="ឬ" data-en="OR">ឬ</span><div class="h-px bg-gray-800 flex-1"></div></div>
+            <button id="btnCheckinAction" data-kh="ស្កេនវត្តមានដោយទូរស័ព្ទ" data-en="Mobile Scan" class="w-full bg-[#0b1120] border border-gray-700 hover:border-cyan-500 text-cyan-400 font-bold py-3 rounded-xl transition-all flex flex-row items-center justify-center gap-2 text-sm group"><i data-lucide="smartphone" class="w-4 h-4"></i> ស្កេនវត្តមានដោយទូរស័ព្ទ</button>
+            <p id="loginError" class="text-red-400 mt-4 text-sm hidden font-bold" data-kh="❌ សិទ្ធិចូលត្រូវបានបដិសេធ!" data-en="❌ Access Denied!">❌ សិទ្ធិចូលត្រូវបានបដិសេធ!</p>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="glass-panel border-b border-gray-800/50 p-4 sticky top-0 z-40 hidden no-print" id="mainHeader">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 relative flex items-center justify-center flex-shrink-0 cursor-pointer hover:scale-110 transition-transform" onclick="downloadLogo()" title="ទាញយកឡូហ្គូ (Download Logo)">
+                    <svg class="absolute inset-0 w-full h-full animate-[spin_10s_linear_infinite]" viewBox="0 0 100 100"><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="none" stroke="rgba(0,246,255,0.5)" stroke-width="2"/></svg>
+                    <svg class="w-5 h-5" viewBox="0 0 100 100"><path d="M50 10 L85 30 L85 70 L50 90 L15 70 L15 30 Z" fill="rgba(0, 246, 255, 0.2)" stroke="#00f6ff" stroke-width="2"/><circle cx="50" cy="50" r="10" fill="#8b5cf6"/></svg>
+                </div>
+                <div class="text-left hidden md:block">
+                    <h1 class="text-lg font-bold text-gradient tracking-wider font-tech whitespace-nowrap">NSE NEXUS PRO</h1>
+                    <p class="text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap" data-kh="នី សុងអ៉ី ឆ្ពោះទៅកាន់អនាគតឌីជីថលជាមួយអ្នក" data-en="Ny Songey Moving Toward Digital Future">នី សុងអ៉ី ឆ្ពោះទៅកាន់អនាគតឌីជីថលជាមួយអ្នក</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center mx-auto md:mx-0">
+                <div class="flex flex-row items-stretch justify-center bg-[#050b14] rounded-xl border border-gray-800 shadow-inner overflow-hidden h-[60px]">
+                    <div class="px-6 py-2 flex flex-col items-center justify-center border-r border-gray-800 min-w-[180px]">
+                        <div id="realTimeClock" class="text-xl font-bold text-cyan-100 font-tech leading-none mb-1">00:00:00</div>
+                        <div id="realTimeDate" class="text-[10px] text-gray-400 font-bold leading-none mt-1 whitespace-nowrap">Loading...</div>
+                    </div>
+                    <button onclick="toggleLanguage()" class="px-5 py-2 hover:bg-gray-800/50 transition-colors flex flex-col items-center justify-center cursor-pointer min-w-[64px] shrink-0 group">
+                        <span id="langFlag" class="text-lg leading-none mb-1 group-hover:scale-110 transition-transform">🇰🇭</span>
+                        <span id="langText" class="text-[9px] font-bold text-gray-300 leading-none mt-1">ខ្មែរ</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav class="bg-[#030712] border-b border-gray-800/50 hidden no-print" id="mainNav">
+        <div class="container mx-auto flex overflow-x-auto custom-scrollbar items-center h-[64px] px-2">
+            <div class="flex items-center h-full">
+                <button data-tab="checkin" class="tab-btn flex flex-row items-center justify-center gap-2 px-4 py-4 text-cyan-400 border-b-2 border-cyan-500 transition-all font-bold whitespace-nowrap active-tab text-sm"><i data-lucide="smartphone" class="w-4 h-4"></i> <span data-kh="ស្កេនវត្តមាន" data-en="Scan">ស្កេនវត្តមាន</span></button>
+                <button data-tab="dashboard" class="tab-btn flex flex-row items-center justify-center gap-2 px-4 py-4 text-gray-500 border-b-2 border-transparent hover:text-cyan-300 transition-all whitespace-nowrap manager-tab hidden font-bold text-sm"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> <span data-kh="ផ្ទាំងគ្រប់គ្រង" data-en="Dashboard">ផ្ទាំងគ្រប់គ្រង</span></button>
+                <button data-tab="employees" class="tab-btn flex flex-row items-center justify-center gap-2 px-4 py-4 text-gray-500 border-b-2 border-transparent hover:text-cyan-300 transition-all whitespace-nowrap manager-tab hidden font-bold text-sm"><i data-lucide="users" class="w-4 h-4"></i> <span data-kh="បុគ្គលិក" data-en="Employees">បុគ្គលិក</span></button>
+                <button data-tab="payroll" class="tab-btn flex flex-row items-center justify-center gap-2 px-4 py-4 text-gray-500 border-b-2 border-transparent hover:text-cyan-300 transition-all whitespace-nowrap manager-tab hidden font-bold text-sm"><i data-lucide="wallet" class="w-4 h-4"></i> <span data-kh="ប្រាក់បៀវត្ស" data-en="Payroll">ប្រាក់បៀវត្ស</span></button>
+                <button data-tab="settings" class="tab-btn flex flex-row items-center justify-center gap-2 px-4 py-4 text-gray-500 border-b-2 border-transparent hover:text-cyan-300 transition-all whitespace-nowrap manager-tab hidden font-bold text-sm" id="navSettings"><i data-lucide="settings" class="w-4 h-4"></i> <span data-kh="ការកំណត់" data-en="Settings">ការកំណត់</span></button>
+            </div>
+            
+            <div class="ml-auto flex items-center gap-3 pr-2">
+                <div id="userRoleBadge" class="bg-[#050b14] px-8 py-2.5 rounded-xl border border-cyan-800 shadow-[0_0_15px_rgba(0,246,255,0.1)] hidden md:flex items-center justify-center min-w-[140px] text-center">
+                    <span id="userRoleBadgeText" class="font-bold uppercase tracking-[0.2em] text-cyan-200 text-sm w-full font-tech mt-0.5 flex justify-center"></span>
+                </div>
+                <button id="btnLogoutAction" class="text-red-400 hover:text-red-300 hover:bg-red-900/20 text-sm flex flex-row items-center justify-center gap-1 px-3 py-1.5 rounded-md transition-all font-bold whitespace-nowrap"><i data-lucide="power" class="w-4 h-4"></i> <span data-kh="ចាកចេញ" data-en="Logout" class="hidden sm:inline">ចាកចេញ</span></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow container mx-auto p-4 hidden no-print" id="mainContent">
+        <!-- 💎 TAB CHECKIN -->
+        <div id="tab-checkin" class="tab-content block max-w-md mx-auto mt-4">
+            <div class="glass-panel p-6 rounded-2xl border-gradient shadow-2xl flex flex-col items-center justify-center text-center relative">
+                
+                <div id="verifyOverlay" class="absolute inset-0 bg-[#0b1120]/95 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center text-center z-[100]">
+                    <i data-lucide="check-circle" class="success-checkmark mb-4"></i>
+                    <h3 class="text-2xl font-bold text-green-400 font-moul tracking-widest mt-2" data-kh="ជោគជ័យ" data-en="Success">ជោគជ័យ</h3>
+                    <p class="text-gray-300 mt-2 text-sm font-bold" data-kh="ទិន្នន័យបានបញ្ជូនទៅ Telegram" data-en="Data sent to Telegram">ទិន្នន័យបានបញ្ជូនទៅ Telegram</p>
+                </div>
+
+                <h2 class="text-xl font-bold text-gray-100 flex flex-row items-center justify-center gap-2 mb-6 w-full"><i data-lucide="fingerprint" class="w-6 h-6 text-cyan-400"></i> <span data-kh="ប្រព័ន្ធផ្ទៀងផ្ទាត់វត្តមាន" data-en="Attendance System">ប្រព័ន្ធផ្ទៀងផ្ទាត់វត្តមាន</span></h2>
+                
+                <select id="empSelect" class="w-full bg-[#050b14] border border-gray-700 text-cyan-100 rounded-lg p-3 mb-4 font-bold text-center cursor-pointer outline-none focus:border-cyan-500 transition-all"></select>
+                
+                <div id="cameraContainer" class="relative bg-[#050b14] rounded-xl overflow-hidden h-64 mb-4 border border-gray-700 shadow-inner w-full flex flex-col items-center justify-center">
+                    <div class="scanner-line"></div>
+                    <video id="videoElement" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+                    
+                    <div id="cameraPlaceholder" class="absolute inset-0 w-full h-full flex items-center justify-center text-gray-400 z-10 pointer-events-none">
+                        <span class="text-sm font-bold text-center tracking-normal w-full" data-kh="កាមេរ៉ាមិនទាន់បើក" data-en="Camera Off">កាមេរ៉ាមិនទាន់បើក</span>
+                    </div>
+                </div>
+                <canvas id="canvasElement" class="hidden"></canvas>
+                
+                <div class="w-full flex flex-col gap-3">
+                    <div class="w-full grid grid-cols-2 gap-3">
+                        <button id="btnStartCam" class="bg-[#282b36] hover:bg-[#323644] transition-colors py-3 rounded-lg border border-gray-700 font-bold flex items-center justify-center w-full h-14 shadow-md">
+                            <span class="text-[#56bbee] text-sm text-center w-full" data-kh="បើកកាមេរ៉ា" data-en="Turn On">បើកកាមេរ៉ា</span>
+                        </button>
+                        <button id="btnStopCam" class="bg-[#282b36] hover:bg-[#323644] transition-colors py-3 rounded-lg border border-gray-700 font-bold flex items-center justify-center w-full h-14 shadow-md">
+                            <span class="text-[#e27373] text-sm text-center w-full" data-kh="បិទ" data-en="Turn Off">បិទ</span>
+                        </button>
+                    </div>
+                    
+                    <div class="w-full grid grid-cols-2 gap-3 relative">
+                        <!-- Removed 'disabled' visually locking only -->
+                        <button id="btnScanIn" class="btn-scan bg-[#3e7239] hover:bg-[#4a8544] transition-colors py-4 rounded-xl shadow-lg border border-[#4a8544]/30 flex items-center justify-center w-full h-20 cursor-pointer" data-type="ចូល">
+                            <span class="text-white font-bold text-base text-center w-full" data-kh="ចូល (IN)" data-en="IN">ចូល (IN)</span>
+                        </button>
+                        <button id="btnScanOut" class="btn-scan bg-[#b3312c] hover:bg-[#cb3832] transition-colors py-4 rounded-xl shadow-lg border border-[#cb3832]/30 flex items-center justify-center w-full h-20 cursor-pointer" data-type="ចេញ">
+                            <span class="text-white font-bold text-base text-center w-full" data-kh="ចេញ (OUT)" data-en="OUT">ចេញ (OUT)</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="statusMsg" class="mt-4 text-[13px] text-yellow-500 font-bold h-6 flex flex-col items-center justify-center w-full"></div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard" class="tab-content hidden text-center">
+            <h2 class="text-2xl font-bold mb-6 flex flex-row items-center justify-center gap-2 text-cyan-400"><i data-lucide="activity"></i> <span data-kh="ស្ថិតិទូទៅប្រចាំថ្ងៃ" data-en="Daily Statistics">ស្ថិតិទូទៅប្រចាំថ្ងៃ</span></h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="glass-panel p-5 rounded-xl border border-gray-700 flex flex-col items-center justify-center text-center cursor-pointer hover-glow" onclick="showListModal('all')"><h3 class="text-xs text-gray-400 uppercase mb-1" data-kh="បុគ្គលិកសរុប" data-en="Total Staff">បុគ្គលិកសរុប</h3><div class="text-4xl font-bold font-tech" id="dashTotalEmp">០</div></div>
+                <div class="glass-panel p-5 rounded-xl border border-green-900/30 text-green-400 flex flex-col items-center justify-center text-center cursor-pointer hover-glow" onclick="showListModal('present')"><h3 class="text-xs text-gray-400 uppercase mb-1" data-kh="មកធ្វើការ" data-en="Present">មកធ្វើការ</h3><div class="text-4xl font-bold font-tech" id="dashPresent">០</div></div>
+                <div class="glass-panel p-5 rounded-xl border border-yellow-900/30 text-yellow-400 flex flex-col items-center justify-center text-center cursor-pointer hover-glow" onclick="showListModal('late')"><h3 class="text-xs text-gray-400 uppercase mb-1" data-kh="មកយឺត" data-en="Late">មកយឺត</h3><div class="text-4xl font-bold font-tech" id="dashLate">០</div></div>
+                <div class="glass-panel p-5 rounded-xl border border-red-900/30 text-red-400 flex flex-col items-center justify-center text-center cursor-pointer hover-glow" onclick="showListModal('absent')"><h3 class="text-xs text-gray-400 uppercase mb-1" data-kh="អវត្តមាន" data-en="Absent">អវត្តមាន</h3><div class="text-4xl font-bold font-tech" id="dashAbsent">០</div></div>
+            </div>
+
+            <!-- តារាងកិត្តិយស (Hall of Fame) ២ផ្នែក: ឆ្វេង-ប្រចាំថ្ងៃ, ស្តាំ-ប្រចាំខែ -->
+            <div class="mt-10 max-w-5xl mx-auto" id="hallOfFameContainer">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- ផ្នែកខាងឆ្វេង: ប្រចាំថ្ងៃ -->
+                    <div class="flex flex-col gap-3">
+                        <div id="hallOfFameDaily" class="bg-[#0b1120] p-4 sm:p-5 rounded-2xl border border-yellow-500/40 shadow-[0_0_30px_rgba(234,179,8,0.15)] flex flex-col h-full relative">
+                            <div class="text-center w-full mb-4 flex flex-col items-center">
+                                <h2 class="text-lg sm:text-xl font-bold text-yellow-400 mb-2 font-moul w-full text-center whitespace-nowrap" data-kh="តារាងកិត្តិយសប្រចាំថ្ងៃ" data-en="Daily Hall of Fame">តារាងកិត្តិយសប្រចាំថ្ងៃ</h2>
+                                <p class="text-[10px] sm:text-xs text-gray-300 font-bold text-center w-max whitespace-nowrap bg-yellow-900/30 py-1.5 px-3 rounded-lg border border-yellow-700/50">
+                                    Top 5 មកលឿនជាងគេ <span class="mx-1 text-gray-500">|</span> <span id="dailyHofDate" class="text-yellow-400">...</span>
+                                </p>
+                            </div>
+                            <div id="leaderboardDaily" class="flex flex-col gap-1.5 flex-1 mt-2">
+                                <!-- JS នឹងបញ្ចូលទិន្នន័យប្រចាំថ្ងៃនៅទីនេះ -->
+                            </div>
+                        </div>
+                        <button onclick="downloadLeaderboard('daily')" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black py-3 rounded-xl font-bold flex items-center justify-center shadow-lg transition-all text-sm h-12">
+                            <span data-kh="ទាញយករូបភាព" data-en="Download Image">ទាញយករូបភាព</span>
+                        </button>
+                    </div>
+
+                    <!-- ផ្នែកខាងស្តាំ: ប្រចាំខែ -->
+                    <div class="flex flex-col gap-3">
+                        <div id="hallOfFameMonthly" class="bg-[#0b1120] p-4 sm:p-5 rounded-2xl border border-cyan-500/40 shadow-[0_0_30px_rgba(0,246,255,0.15)] flex flex-col h-full relative">
+                            <div class="text-center w-full mb-4 flex flex-col items-center">
+                                <h2 class="text-lg sm:text-xl font-bold text-cyan-400 mb-2 font-moul w-full text-center whitespace-nowrap" data-kh="តារាងកិត្តិយសប្រចាំខែ" data-en="Monthly Hall of Fame">តារាងកិត្តិយសប្រចាំខែ</h2>
+                                <p class="text-[10px] sm:text-xs text-gray-300 font-bold text-center w-max whitespace-nowrap bg-cyan-900/30 py-1.5 px-3 rounded-lg border border-cyan-700/50">
+                                    Top 5 មកទាន់ពេលច្រើនគេ <span class="mx-1 text-gray-500">|</span> <span id="monthlyHofDate" class="text-cyan-400">...</span>
+                                </p>
+                            </div>
+                            <div id="leaderboardMonthly" class="flex flex-col gap-1.5 flex-1 mt-2">
+                                <!-- JS នឹងបញ្ចូលទិន្នន័យប្រចាំខែនៅទីនេះ -->
+                            </div>
+                        </div>
+                        <button onclick="downloadLeaderboard('monthly')" class="w-full bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-black py-3 rounded-xl font-bold flex items-center justify-center shadow-lg transition-all text-sm h-12">
+                            <span data-kh="ទាញយករូបភាព" data-en="Download Image">ទាញយករូបភាព</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EMPLOYEES TAB (Aligned Left) -->
+        <div id="tab-employees" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold flex flex-row items-center gap-2"><i data-lucide="database" class="text-cyan-500"></i> <span data-kh="បុគ្គលិក" data-en="Employees">បុគ្គលិក</span></h2>
+                <button id="btnAddEmployee" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-sm admin-only hidden font-bold flex flex-row items-center justify-center gap-1"><i data-lucide="plus" class="w-4 h-4"></i> <span data-kh="បន្ថែមថ្មី" data-en="Add">បន្ថែមថ្មី</span></button>
+            </div>
+            <div class="overflow-x-auto glass-panel rounded-xl border border-gray-700">
+                <table class="w-full text-center whitespace-nowrap">
+                    <thead class="bg-gray-900/80 text-gray-300 border-b border-gray-600 text-xs font-bold uppercase">
+                        <tr><th class="p-4" data-kh="រូប" data-en="PIC">រូប</th><th class="p-4 text-left" data-kh="ID & ឈ្មោះ" data-en="Name">ID & ឈ្មោះ</th><th class="p-4 text-left" data-kh="តួនាទី" data-en="Role">តួនាទី</th><th class="p-4" data-kh="ម៉ោងការងារ" data-en="Shift">ម៉ោងការងារ</th><th class="p-4" data-kh="ប្រាក់ខែ" data-en="Salary">ប្រាក់ខែ</th><th class="p-4 admin-only hidden" data-kh="សកម្មភាព" data-en="Action">សកម្មភាព</th></tr>
+                    </thead>
+                    <tbody id="employeeTableBody" class="divide-y divide-gray-800/50 font-bold"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PAYROLL TAB -->
+        <div id="tab-payroll" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold flex flex-row items-center gap-2"><i data-lucide="wallet" class="text-cyan-500"></i> <span data-kh="ប្រាក់បៀវត្ស" data-en="Payroll">ប្រាក់បៀវត្ស</span></h2>
+                <div class="flex flex-row gap-2">
+                    <button id="btnExportExcel" class="bg-green-700 text-white px-6 py-2 rounded-lg text-sm flex items-center justify-center font-bold transition-all hover:bg-green-600 w-[100px]">Excel</button>
+                    <button id="btnPrintMaster" class="bg-violet-600 text-white px-6 py-2 rounded-lg text-sm flex items-center justify-center font-bold transition-all hover:bg-violet-500 w-[140px]"><span data-kh="របាយការណ៍រួម" data-en="Report">របាយការណ៍រួម</span></button>
+                </div>
+            </div>
+            <div class="overflow-x-auto glass-panel rounded-xl border border-gray-700 shadow-xl">
+                <table class="w-full text-center whitespace-nowrap">
+                    <thead class="bg-gray-900/80 text-gray-300 border-b border-gray-600 text-xs font-bold uppercase">
+                        <tr>
+                            <th class="px-2 py-3 align-middle">ID</th>
+                            <th class="px-2 py-3 text-left align-middle" data-kh="ឈ្មោះ" data-en="Name">ឈ្មោះ</th>
+                            <th class="px-2 py-3 text-left align-middle" data-kh="តួនាទី" data-en="Role">តួនាទី</th>
+                            <th class="px-2 py-3 align-middle" data-kh="ប្រាក់គោល" data-en="Base">ប្រាក់គោល</th>
+                            <th class="px-2 py-3 text-yellow-500 align-middle" data-kh="យឺត" data-en="Late">យឺត</th>
+                            <th class="px-2 py-3 text-red-400 align-middle" data-kh="កាត់" data-en="Cut">កាត់</th>
+                            <th class="px-2 py-3 text-purple-400 align-middle" data-kh="ឈប់បុណ្យ" data-en="Hol">ឈប់បុណ្យ</th>
+                            <th class="px-2 py-3 text-blue-400 align-middle" data-kh="បន្ថែម" data-en="Bonus">បន្ថែម</th>
+                            <th class="px-2 py-3 text-green-400 align-middle" data-kh="សរុប" data-en="Total">សរុប</th>
+                            <th class="px-2 py-3 text-center align-middle w-16">Slip</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payrollTableBody" class="divide-y divide-gray-800/50 font-bold text-sm"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SETTINGS TAB (Centered Perfectly over Security & Data) -->
+        <div id="tab-settings" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold flex flex-row items-center gap-2"><i data-lucide="settings" class="text-cyan-500 w-6 h-6"></i> <span data-kh="ការកំណត់ប្រព័ន្ធ" data-en="System Settings">ការកំណត់ប្រព័ន្ធ</span></h2>
+            </div>
+            <div class="max-w-4xl mx-auto">
+                <div class="flex flex-col md:flex-row gap-8 items-stretch justify-center">
+                    <div class="glass-panel p-8 rounded-2xl border border-gray-700 flex-1 flex flex-col items-center justify-center text-center w-full">
+                        <h3 class="text-cyan-400 font-bold mb-6 text-xl" data-kh="សុវត្ថិភាព" data-en="Security">សុវត្ថិភាព</h3>
+                        <div class="space-y-6 w-full max-w-[280px]">
+                            <div><label class="block text-gray-400 mb-2 text-sm font-bold" data-kh="កូដថៅកែថ្មី:" data-en="Admin PIN:">កូដថៅកែថ្មី:</label><input type="password" id="newAdminPin" class="w-full bg-[#050b14] border border-gray-700 rounded-xl p-3 text-cyan-300 text-center font-tech text-xl tracking-[0.3em] outline-none"></div>
+                            <div><label class="block text-gray-400 mb-2 text-sm font-bold" data-kh="កូដ HR ថ្មី:" data-en="HR PIN:">កូដ HR ថ្មី:</label><input type="password" id="newHrPin" class="w-full bg-[#050b14] border border-gray-700 rounded-xl p-3 text-cyan-300 text-center font-tech text-xl tracking-[0.3em] outline-none"></div>
+                            <button id="btnSavePin" class="w-full bg-cyan-700 hover:bg-cyan-600 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center" data-kh="រក្សាទុក" data-en="Save">រក្សាទុក</button>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-8 rounded-2xl border border-gray-700 flex-1 flex flex-col items-center justify-center text-center w-full">
+                        <h3 class="text-violet-400 font-bold mb-6 text-xl" data-kh="ទិន្នន័យ" data-en="Data">ទិន្នន័យ</h3>
+                        <div class="space-y-4 w-full max-w-[280px]">
+                            <button id="btnGenMock" class="w-full bg-indigo-900/40 hover:bg-indigo-800 border border-indigo-700 text-indigo-100 py-3.5 rounded-xl flex flex-row items-center justify-center gap-2 font-bold transition-all shadow-md"><i data-lucide="sparkles" class="w-5 h-5"></i> <span data-kh="បង្កើតទិន្នន័យតេស្ត" data-en="Generate Mock">បង្កើតទិន្នន័យតេស្ត</span></button>
+                            <button id="btnExport" class="w-full bg-green-900/40 hover:bg-green-800 border border-green-700 text-green-100 py-3.5 rounded-xl flex flex-row items-center justify-center gap-2 font-bold transition-all shadow-md"><i data-lucide="download-cloud" class="w-5 h-5"></i> <span data-kh="ទាញយកទិន្នន័យ" data-en="Backup Data">ទាញយកទិន្នន័យ</span></button>
+                            <div class="py-2"></div>
+                            <button id="btnFactoryReset" class="w-full bg-red-900/30 hover:bg-red-900/60 border border-red-800 text-red-400 py-3.5 rounded-xl flex flex-row items-center justify-center gap-2 font-bold transition-all"><i data-lucide="alert-triangle" class="w-5 h-5"></i> <span data-kh="លុបទិន្នន័យទាំងអស់" data-en="Factory Reset">លុបទិន្នន័យទាំងអស់</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODALS -->
+    <!-- Custom Dialog Modal -->
+    <div id="customDialog" class="fixed inset-0 z-[200] flex items-center justify-center glass-panel hidden no-print">
+        <div class="bg-[#0b1120] p-6 rounded-2xl border border-cyan-800 w-[90%] max-w-sm text-center shadow-2xl relative">
+            <p id="dialogMessage" class="text-white mb-6 font-bold"></p>
+            <div class="flex gap-3 justify-center" id="dialogButtons">
+                <!-- Buttons injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- List Details Modal -->
+    <div id="listModal" class="fixed inset-0 z-[100] flex items-center justify-center glass-panel hidden no-print">
+        <div class="bg-[#0b1120] p-6 rounded-2xl border border-cyan-800 w-[90%] max-w-sm text-center shadow-2xl relative">
+            <h3 class="text-xl font-bold mb-4 text-cyan-400 border-b border-gray-800 pb-3 flex flex-row items-center justify-center gap-2" id="listModalTitle"></h3>
+            <div id="listModalContent" class="max-h-60 overflow-y-auto mb-4 custom-scrollbar space-y-2 text-left px-2"></div>
+            <button onclick="document.getElementById('listModal').classList.add('hidden')" class="w-full bg-gray-800 hover:bg-gray-700 py-3 rounded-lg font-bold transition-all text-white flex items-center justify-center" data-kh="បិទ" data-en="Close">បិទ</button>
+        </div>
+    </div>
+
+    <!-- Edit Employee Modal -->
+    <div id="empModal" class="fixed inset-0 z-[70] flex items-center justify-center glass-panel hidden no-print">
+        <div class="bg-[#0b1120] p-6 rounded-2xl border border-violet-800 w-[90%] max-w-md shadow-2xl flex flex-col items-center justify-center text-center font-bold">
+            <h3 class="text-xl font-bold text-violet-400 mb-6" id="empModalTitle" data-kh="ព័ត៌មានបុគ្គលិក" data-en="Employee Info">ព័ត៌មានបុគ្គលិក</h3>
+            <input type="hidden" id="empEditId">
+            <div class="space-y-4 mb-8 w-full">
+                <div><label class="text-xs text-gray-400 block mb-1 text-left" data-kh="ឈ្មោះ:" data-en="Name:">ឈ្មោះ:</label><input type="text" id="empEditName" class="w-full bg-[#050b14] border border-gray-700 rounded-lg p-3 text-center outline-none"></div>
+                <div><label class="text-xs text-gray-400 block mb-1 text-left" data-kh="តួនាទី:" data-en="Role:">តួនាទី:</label><input type="text" id="empEditRole" class="w-full bg-[#050b14] border border-gray-700 rounded-lg p-3 text-center outline-none"></div>
+                <div><label class="text-xs text-gray-400 block mb-1 text-left" data-kh="ប្រាក់ខែ ($):" data-en="Salary ($):">ប្រាក់ខែ ($):</label><input type="number" id="empEditSalary" class="w-full bg-[#050b14] border border-gray-700 rounded-lg p-3 text-center outline-none"></div>
+                
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1 text-left" data-kh="រូបថត (ជ្រើសរើស):" data-en="Photo (Choose):">រូបថត (ជ្រើសរើស):</label>
+                    <div class="flex items-center gap-3">
+                        <div class="relative w-14 h-14 rounded-full bg-gray-800 border border-gray-700 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                            <img id="empEditImgPreview" src="" class="w-full h-full object-cover hidden">
+                            <i data-lucide="image" id="empEditImgIcon" class="w-5 h-5 text-gray-500"></i>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <input type="file" id="empEditImgFile" accept="image/*" class="w-full bg-[#050b14] border border-gray-700 rounded-lg p-1.5 text-xs text-gray-300 outline-none file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-cyan-900/50 file:text-cyan-400 cursor-pointer">
+                            <input type="hidden" id="empEditImgBase64">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="text-xs text-gray-400 block mb-1 text-left" data-kh="ម៉ោងចូល:" data-en="Start:">ម៉ោងចូល:</label><div class="flex gap-2"><input type="number" id="empEditSH" class="w-full bg-[#050b14] border border-gray-700 rounded-lg p-2 text-center outline-none" placeholder="17"><input type="number" id="empEditSM" class="w-full bg-[#050b14] border border-gray-700 rounded-lg p-2 text-center outline-none" placeholder="00"></div></div>
+                    <div><label class="text-xs text-gray-400 block mb-1 text-left" data-kh="ម៉ោងចេញ:" data-en="End:">ម៉ោងចេញ:</label><div class="flex gap-2"><input type="number" id="empEditEH" class="w-full bg-[#050b14] border border-gray-700 rounded-lg p-2 text-center outline-none" placeholder="2"><input type="number" id="empEditEM" class="w-full bg-[#050b14] border border-gray-700 rounded-lg p-2 text-center outline-none" placeholder="00"></div></div>
+                </div>
+            </div>
+            <div class="flex gap-3 w-full"><button id="btnCancelEmp" class="flex-1 bg-gray-800 hover:bg-gray-700 py-3 rounded-lg font-bold flex items-center justify-center" data-kh="បោះបង់" data-en="Cancel">បោះបង់</button><button id="btnSaveEmp" class="flex-1 bg-violet-600 hover:bg-violet-500 py-3 rounded-lg font-bold flex items-center justify-center" data-kh="រក្សាទុក" data-en="Save">រក្សាទុក</button></div>
+        </div>
+    </div>
+    
+    <!-- PRINT MASTER & SLIP TEMPLATES -->
+    <div id="printPreviewModal" class="fixed inset-0 z-[100] bg-gray-900 hidden flex-col no-print">
+        <div class="h-16 bg-gray-800 text-white flex justify-between items-center px-6"><span class="font-bold text-cyan-400 flex items-center gap-2"><i data-lucide="printer"></i> Print Preview</span><div class="flex gap-3"><button id="btnClosePrint" class="bg-gray-700 px-5 py-2 rounded-lg text-sm font-bold hover:bg-gray-600 transition-all flex items-center justify-center" data-kh="បិទ" data-en="Close">បិទ</button><button onclick="window.print()" class="bg-cyan-600 px-5 py-2 rounded-lg text-sm font-bold hover:bg-cyan-500 transition-all flex items-center justify-center" data-kh="ព្រីន" data-en="Print">ព្រីន</button></div></div>
+        <div class="flex-1 overflow-auto p-4 flex justify-center items-start bg-gray-500">
+            <div id="printContentArea" class="bg-white text-black shadow-2xl mx-auto p-8 w-full max-w-[297mm]"></div> 
+        </div>
+    </div>
+
+    <!-- Master Report Template -->
+    <div id="masterTemplate" class="hidden">
+        <div class="official-header text-center mb-6">
+            <h2 class="font-moul text-lg">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+            <h3 class="font-moul text-base mt-1">ជាតិ សាសនា ព្រះមហាក្សត្រ</h3>
+            
+            <div class="flex justify-center items-center mt-2 mb-1">
+                <svg width="280" height="15" viewBox="0 0 280 15" fill="black" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="0" y="7" width="90" height="1" />
+                    <rect x="190" y="7" width="90" height="1" />
+                    <circle cx="95" cy="7.5" r="1.5" />
+                    <circle cx="185" cy="7.5" r="1.5" />
+                    <rect x="102" y="5" width="1" height="5" />
+                    <rect x="105" y="3" width="2" height="9" />
+                    <rect x="109" y="5" width="1" height="5" />
+                    <rect x="170" y="5" width="1" height="5" />
+                    <rect x="173" y="3" width="2" height="9" />
+                    <rect x="177" y="5" width="1" height="5" />
+                    <path d="M 115,3 C 112,5 112,10 115,12 C 117,10 115,7 125,7.5 C 115,8 117,5 115,3 Z" />
+                    <path d="M 165,3 C 168,5 168,10 165,12 C 163,10 165,7 155,7.5 C 165,8 163,5 165,3 Z" />
+                    <path d="M 130,7.5 Q 140,2 140,7.5 Q 140,13 130,7.5 Z" />
+                    <path d="M 150,7.5 Q 140,2 140,7.5 Q 140,13 150,7.5 Z" />
+                    <circle cx="140" cy="7.5" r="2.5" fill="white" />
+                    <circle cx="140" cy="7.5" r="1" />
+                </svg>
+            </div>
+        </div>
+        <div class="relative flex justify-center items-end pb-2 mb-4 w-full h-16">
+            <div class="absolute left-0 bottom-2 text-left font-bold text-xs">
+                <h1 class="text-xl font-tech">NSE NEXUS PRO</h1>
+                <p class="mt-1">📍 ជួបស្នេហ៍ផាប់ (Joub Sne Pub)</p>
+            </div>
+            <div class="text-center flex flex-col items-center z-10 w-full">
+                <h2 class="text-lg font-moul border-2 border-black px-4 py-1">បញ្ជីរាយនាម និងប្រាក់បៀវត្ស</h2>
+                <p class="mt-2 font-bold text-xs" id="p_master_date"></p>
+            </div>
+        </div>
+        <table class="w-full border border-black text-[11px] text-center mb-6">
+            <thead>
+                <tr class="bg-gray-200 font-bold border-b border-black text-center">
+                    <th class="p-1 border border-black w-8">ល.រ</th>
+                    <th class="p-1 border border-black text-left">ឈ្មោះបុគ្គលិក</th>
+                    <th class="p-1 border border-black text-left">តួនាទី</th>
+                    <th class="p-1 border border-black">ប្រាក់គោល</th>
+                    <th class="p-1 border border-black">ម៉ោងយឺត</th>
+                    <th class="p-1 border border-black text-red-600">ផាកពិន័យ</th>
+                    <th class="p-1 border border-black text-purple-600">ឈប់បុណ្យ</th>
+                    <th class="p-1 border border-black text-blue-600">បន្ថែម</th>
+                    <th class="p-1 border border-black bg-gray-300">ប្រាក់ត្រូវបើកសរុប</th>
+                    <th class="p-1 border border-black w-20">ហត្ថលេខា</th>
+                </tr>
+            </thead>
+            <tbody class="font-bold text-[11px] text-center" id="p_master_tbody"></tbody>
+            <tfoot>
+                <tr class="bg-gray-200 font-bold text-[12px] border-t-2 border-black text-center">
+                    <td colspan="3" class="p-1 text-right border border-black">សរុបរួមទាំងអស់:</td>
+                    <td id="p_master_tbase" class="p-1 border border-black"></td>
+                    <td class="border border-black"></td>
+                    <td id="p_master_tpen" class="p-1 border border-black text-red-600"></td>
+                    <td id="p_master_tholid" class="p-1 border border-black text-purple-600"></td>
+                    <td id="p_master_tbon" class="p-1 border border-black text-blue-600"></td>
+                    <td id="p_master_tnet" class="p-1 border border-black bg-gray-300"></td>
+                    <td class="border border-black"></td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="flex justify-between text-center font-bold font-moul mt-10 px-16 text-xs">
+            <div><p>គណនេយ្យ</p><p class="mt-16 border-t border-black w-32 pt-1 font-sans text-center">នី សុងអ៉ី</p></div>
+            <div><p>នាយកក្រុមហ៊ុន</p><p class="mt-16 border-t border-black w-32 pt-1 font-sans text-center">សុខ ណារឹទ្ធ</p></div>
+        </div>
+    </div>
+
+    <!-- Slip Template -->
+    <div id="slipTemplate" class="hidden">
+        <div class="text-center border-b-2 border-black pb-4 mb-4">
+            <h1 class="text-2xl font-tech font-bold mt-2">NSE NEXUS PRO</h1>
+            <p class="text-xs font-bold mt-1">📍 ជួបស្នេហ៍ផាប់ (Joub Sne Pub)</p>
+        </div>
+        <div class="text-center mb-6">
+            <h2 class="text-lg font-moul border border-black inline-block px-6 py-1">ប័ណ្ណបើកប្រាក់បៀវត្ស</h2>
+            <p class="text-xs mt-2 font-bold" id="p_slip_code"></p>
+        </div>
+        <div class="text-sm space-y-2 font-bold mb-6 text-left px-4 max-w-sm mx-auto">
+            <div class="flex justify-between border-b border-dashed pb-1"><span>ឈ្មោះ:</span> <span id="p_slip_name"></span></div>
+            <div class="flex justify-between border-b border-dashed pb-1"><span>តួនាទី:</span> <span id="p_slip_role"></span></div>
+            <div class="flex justify-between border-b border-dashed pb-1"><span>ប្រាក់គោល:</span> <span id="p_slip_base"></span></div>
+            <div class="flex justify-between border-b border-dashed pb-1 text-red-600"><span>ផាកពិន័យ:</span> <span id="p_slip_pen"></span></div>
+            <div class="flex justify-between border-b border-dashed pb-1 text-purple-600"><span>ឈប់បុណ្យ (x2):</span> <span id="p_slip_holid"></span></div>
+            <div class="flex justify-between border-b border-dashed pb-1 text-blue-600"><span>ប្រាក់បន្ថែម:</span> <span id="p_slip_bon"></span></div>
+            <div class="flex justify-between text-base border-b-2 border-black pb-1 mt-2 bg-gray-100 p-1"><span>ត្រូវបើកសរុប:</span> <span id="p_slip_net"></span></div>
+        </div>
+        <div class="text-right text-xs mb-8 font-bold px-4 max-w-sm mx-auto" id="p_slip_date"></div>
+        <div class="flex justify-between text-center text-xs font-bold font-moul px-4 max-w-sm mx-auto">
+            <div class="w-1/3 text-center"><p>អ្នកទទួល</p><p class="mt-16 border-t border-black pt-1 font-sans" id="p_slip_sign">ឈ្មោះ</p></div>
+            <div class="w-1/3 text-center"><p>គណនេយ្យ</p><p class="mt-16 border-t border-black pt-1 font-sans">នី សុងអ៉ី</p></div>
+            <div class="w-1/3 text-center"><p>នាយក</p><p class="mt-16 border-t border-black pt-1 font-sans">សុខ ណារឹទ្ធ</p></div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script>
+        // Custom Dialog Logic (Replaces Alert/Confirm)
+        function customAlert(msg) {
+            const d = document.getElementById('customDialog');
+            document.getElementById('dialogMessage').innerHTML = msg;
+            document.getElementById('dialogButtons').innerHTML = `<button onclick="document.getElementById('customDialog').classList.add('hidden')" class="bg-cyan-600 hover:bg-cyan-500 px-6 py-2 rounded-lg text-white font-bold w-full">OK</button>`;
+            d.classList.remove('hidden');
+        }
+
+        function customConfirm(msg, onYes) {
+            const d = document.getElementById('customDialog');
+            document.getElementById('dialogMessage').innerHTML = msg;
+            document.getElementById('dialogButtons').innerHTML = `
+                <button onclick="document.getElementById('customDialog').classList.add('hidden')" class="bg-gray-600 hover:bg-gray-500 px-6 py-2 rounded-lg text-white font-bold flex-1">Cancel</button>
+                <button id="btnConfirmYes" class="bg-red-600 hover:bg-red-500 px-6 py-2 rounded-lg text-white font-bold flex-1">Yes</button>
+            `;
+            document.getElementById('btnConfirmYes').onclick = () => {
+                d.classList.add('hidden');
+                onYes();
+            };
+            d.classList.remove('hidden');
+        }
+
+        // ⚠️ Link ដែលបានភ្ជាប់ជាមួយ Google Script រួចរាល់
+        const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbybSsxbYP8Xd7cK2ybz4yGWOI9Izi5L12xLx_E91_L0RcIKUNvalrU0RuU28S4-zAsV/exec"; 
+        
+        let currentLang = 'kh';
+        let currentUserRole = '';
+        let videoStream = null;
+        let attendanceRecords = {};
+        let employeeDB = [];
+        let adminPin = '180625';
+        let hrPin = '0168';
+        let payrollTotals = { tBase: 0, tPen: 0, tHol: 0, tBon: 0, tNet: 0 };
+
+        const defaultDB = [
+            { id: 1, name: "នី សុងអ៉ី", role: "អ្នកគ្រប់គ្រងទូទៅ", salary: 300, shift: "17:00 - 02:00", startH: 17, startM: 0, endH: 2, endM: 0, img: "" },
+            { id: 2, name: "យិន លីដា", role: "អ្នកគិតលុយ", salary: 250, shift: "17:00 - 02:00", startH: 17, startM: 0, endH: 2, endM: 0, img: "" },
+            { id: 3, name: "ប៉ែន វណ្ណដា", role: "មេការ", salary: 200, shift: "20:00 - 02:00", startH: 20, startM: 0, endH: 2, endM: 0, img: "" },
+            { id: 4, name: "ខៀវ ផល្លា", role: "មេការ", salary: 200, shift: "17:00 - 02:00", startH: 17, startM: 0, endH: 2, endM: 0, img: "" },
+            { id: 5, name: "មេចុងភៅ", role: "មេចុងភៅ", salary: 500, shift: "16:00 - 02:00", startH: 16, startM: 0, endH: 2, endM: 0, img: "" },
+            { id: 6, name: "បងសេង", role: "កូនកាំបិត", salary: 250, shift: "16:00 - 02:00", startH: 16, startM: 0, endH: 2, endM: 0, img: "" },
+            { id: 7, name: "មីងលាងចាន", role: "អ្នកលាងចាន", salary: 150, shift: "18:00 - 01:00", startH: 18, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 8, name: "ឡុក ចាន់", role: "អ្នកអូឌ័រ", salary: 130, shift: "17:00 - 02:00", startH: 17, startM: 0, endH: 2, endM: 0, img: "" },
+            { id: 9, name: "នុត គឹមលិ", role: "សន្តិសុខ", salary: 84, shift: "16:00 - 02:00", startH: 16, startM: 0, endH: 2, endM: 0, img: "" },
+            { id: 10, name: "ប្អូនហ៊ាង", role: "សន្តិសុខ", salary: 120, shift: "16:00 - 02:00", startH: 16, startM: 0, endH: 2, endM: 0, img: "" },
+            { id: 11, name: "អាលីន", role: "អ្នកទទួលភ្ញៀវ", salary: 150, shift: "18:00 - 01:00", startH: 18, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 12, name: "អាឡែន", role: "អ្នកទទួលភ្ញៀវ", salary: 150, shift: "18:00 - 01:00", startH: 18, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 13, name: "អាណែត", role: "អ្នកទទួលភ្ញៀវ", salary: 150, shift: "18:00 - 01:00", startH: 18, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 14, name: "អាយ៉ាជ្រុយ", role: "អ្នកទទួលភ្ញៀវ", salary: 150, shift: "18:00 - 01:00", startH: 18, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 15, name: "អានី", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 16, name: "អាយ៉ា", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 17, name: "អាតឿ", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 18, name: "ស្រីអូន", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 19, name: "ទី ទី", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 20, name: "អាហ្សា", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 21, name: "អាណេង", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 22, name: "អាលីសា", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 23, name: "អាណេងទី២", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 24, name: "អាណៃ", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 25, name: "អាផាន់នី", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
+            { id: 26, name: "អាវ៉ែនតា ស្រី", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" }
+        ];
+
+        function toKhmerNum(str) {
+            if (str === null || str === undefined || str === '') return '០';
+            const khNums = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+            return str.toString().replace(/\d/g, m => khNums[m]);
+        }
+
+        function formatLateTime(mins) {
+            if (!mins || mins <= 0) return '០នាទី';
+            if (mins < 60) return `${toKhmerNum(mins)}នាទី`;
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            return m > 0 ? `${toKhmerNum(h)}ម៉ោង ${toKhmerNum(m)}នាទី` : `${toKhmerNum(h)}ម៉ោង`;
+        }
+
+        function updateClock() {
+            try {
+                const now = new Date();
+                const timeStr = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Phnom_Penh', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(now);
+                const rTime = document.getElementById('realTimeClock');
+                if(rTime) rTime.textContent = currentLang === 'kh' ? toKhmerNum(timeStr) : timeStr;
+                const dateF = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Phnom_Penh', day: '2-digit', month: '2-digit', year: 'numeric' }).format(now);
+                const parts = dateF.split('/');
+                if(parts.length === 3) {
+                    const [d, m, y] = parts;
+                    const months = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+                    const rDate = document.getElementById('realTimeDate');
+                    if(rDate) rDate.textContent = currentLang === 'kh' ? `ថ្ងៃទី ${toKhmerNum(d)} ខែ ${months[parseInt(m, 10)-1]} ឆ្នាំ ${toKhmerNum(y)}` : dateF;
+                }
+            } catch(e) {}
+        }
+
+        function populateDropdown() {
+            const s = document.getElementById('empSelect');
+            if (!s) return;
+            s.innerHTML = `<option value="" class="text-center">-- ${currentLang==='kh'?'សូមជ្រើសរើសឈ្មោះ':'Select Name'} --</option>`;
+            employeeDB.forEach(e => s.innerHTML += `<option value="${e.id}" class="text-left">${toKhmerNum(e.id)}. ${e.name || 'N/A'} (${e.role || 'N/A'})</option>`);
+            
+            if (!s.value) {
+                s.classList.remove('text-left');
+                s.classList.add('text-center');
+            } else {
+                s.classList.remove('text-center');
+                s.classList.add('text-left');
+            }
+            
+            s.onchange = () => {
+                if (!s.value) {
+                    s.classList.remove('text-left');
+                    s.classList.add('text-center');
+                } else {
+                    s.classList.remove('text-center');
+                    s.classList.add('text-left');
+                }
+
+                const id = s.value;
+                const btnIn = document.getElementById('btnScanIn');
+                const btnOut = document.getElementById('btnScanOut');
+                let msg = document.getElementById('statusMsg');
+                msg.innerHTML = ''; 
+
+                if(!btnIn || !btnOut) return;
+                
+                // Clear any visual locks initially
+                btnIn.classList.remove('opacity-50', 'grayscale');
+                btnOut.classList.remove('opacity-50', 'grayscale');
+
+                if(!id) return;
+                
+                const rec = attendanceRecords[id];
+                if (!rec) return;
+
+                const now = Date.now();
+                const lockMins = 300;
+
+                // Visual Status Logic (Just UI dimming, full enforcement is on click)
+                let lockIn = false;
+                let lockOut = false;
+
+                if (rec.inToday && rec.lastAction === 'ចូល') {
+                    lockIn = true; // Locked forever today after IN
+                }
+                
+                if (rec.lastAction === 'ចេញ' && rec.scanOutTimestamp) {
+                    let diffMins = Math.floor((now - rec.scanOutTimestamp) / 60000);
+                    if (diffMins < lockMins) lockIn = true; // Locked 300 mins after OUT
+                }
+
+                if (rec.lastAction === 'ចូល' && rec.scanInTimestamp) {
+                    let diffMins = Math.floor((now - rec.scanInTimestamp) / 60000);
+                    if (diffMins < lockMins) lockOut = true; // Locked 300 mins after IN
+                }
+                
+                if (rec.lastAction === 'ចេញ' && rec.scanOutTimestamp) {
+                    let diffMins = Math.floor((now - rec.scanOutTimestamp) / 60000);
+                    if (diffMins < lockMins) lockOut = true; // Locked 300 mins after OUT
+                }
+
+                if (lockIn) btnIn.classList.add('opacity-50', 'grayscale');
+                if (lockOut) btnOut.classList.add('opacity-50', 'grayscale');
+            };
+        }
+
+        function handleLogin() {
+            const pin = document.getElementById('pinInput').value;
+            if (pin === adminPin) initApp('dashboard', 'admin');
+            else if (pin === hrPin) initApp('dashboard', 'hr');
+            else document.getElementById('loginError').classList.remove('hidden');
+        }
+
+        function initApp(tab, role) {
+            currentUserRole = role;
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('loginLangBtnContainer').classList.add('hidden');
+            document.getElementById('mainHeader').classList.remove('hidden');
+            document.getElementById('mainNav').classList.remove('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            if (role !== 'employee') {
+                const b = document.getElementById('userRoleBadge');
+                if(b) { b.classList.remove('hidden'); b.classList.add('flex'); document.getElementById('userRoleBadgeText').innerText = role.toUpperCase(); }
+                
+                document.querySelectorAll('.manager-tab').forEach(el => el.classList.remove('hidden'));
+                
+                if (role === 'admin') {
+                    document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+                } else {
+                    document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+                }
+                
+                const isHr = (role === 'hr');
+                ['newAdminPin', 'newHrPin', 'btnSavePin', 'btnGenMock', 'btnFactoryReset'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) {
+                        el.disabled = isHr;
+                        if(isHr) el.classList.add('opacity-50', 'cursor-not-allowed');
+                        else el.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                });
+
+                renderTables();
+            }
+            switchTab(tab);
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => { el.classList.remove('text-cyan-400', 'border-cyan-500', 'font-bold'); el.classList.add('text-gray-500'); });
+            document.getElementById(`tab-${id}`).classList.remove('hidden');
+            const b = document.querySelector(`[data-tab="${id}"]`);
+            if (b) { b.classList.remove('text-gray-500'); b.classList.add('text-cyan-400', 'border-cyan-500', 'font-bold'); }
+            if (id !== 'checkin') stopCamera();
+        }
+
+        async function startCamera() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                const v = document.getElementById('videoElement');
+                v.srcObject = videoStream; v.classList.remove('hidden');
+                document.getElementById('cameraPlaceholder').classList.add('hidden');
+            } catch(e) { customAlert(currentLang === 'kh' ? 'កាមេរ៉ាមិនទាន់បើក!' : 'Camera Denied!'); }
+        }
+
+        function stopCamera() {
+            if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+            document.getElementById('videoElement').classList.add('hidden');
+            document.getElementById('cameraPlaceholder').classList.remove('hidden');
+        }
+
+        function captureImage() {
+            const v = document.getElementById('videoElement');
+            if (!v || v.classList.contains('hidden')) return null;
+            const c = document.getElementById('canvasElement');
+            c.width = v.videoWidth; c.height = v.videoHeight;
+            c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+            return c.toDataURL('image/jpeg', 0.5);
+        }
+
+        function handleAttendance(type) {
+            const id = parseInt(document.getElementById('empSelect').value);
+            const msg = document.getElementById('statusMsg');
+
+            if (!id) { msg.innerHTML = `<span class='text-red-500'>${currentLang==='kh'?'សូមជ្រើសរើសឈ្មោះសិន!':'Please select name!'}</span>`; return; }
+
+            // Ensure record exists
+            if (!attendanceRecords[id]) {
+                attendanceRecords[id] = { late: 0, earlyOut: 0, present: false, inToday: false, scanInDate: '', scanOutDate: '', scanInTimestamp: 0, scanOutTimestamp: 0, lastAction: '', penalty: 0, holidayPenalty: 0, monthlyPunctualDays: 0 };
+            }
+            
+            const rec = attendanceRecords[id];
+            const nowTime = Date.now();
+            const lockMins = 300;
+
+            // ---- ANTI-SPAM LOCK CHECKING ----
+            if (type === 'ចូល') {
+                if (rec.inToday && rec.lastAction === 'ចូល') {
+                    msg.innerHTML = `<span class='text-red-500'>🔒 អ្នកបានស្កេនចូលរួចហើយ! មិនអាចស្កេនចូលម្តងទៀតបានទេថ្ងៃនេះ។</span>`;
+                    return;
+                }
+                if (rec.lastAction === 'ចេញ' && rec.scanOutTimestamp) {
+                    let diffMins = Math.floor((nowTime - rec.scanOutTimestamp) / 60000);
+                    if (diffMins < lockMins) {
+                        let remaining = lockMins - diffMins;
+                        msg.innerHTML = `<span class='text-yellow-500'>🔒 ជាប់សោរ! អាចស្កេនចូលវិញនៅ ${toKhmerNum(remaining)} នាទីទៀត។</span>`;
+                        return;
+                    }
+                }
+            } else if (type === 'ចេញ') {
+                if (rec.lastAction === 'ចូល' && rec.scanInTimestamp) {
+                    let diffMins = Math.floor((nowTime - rec.scanInTimestamp) / 60000);
+                    if (diffMins < lockMins) {
+                        let remaining = lockMins - diffMins;
+                        msg.innerHTML = `<span class='text-yellow-500'>🔒 ជាប់សោរ! អាចស្កេនចេញបាននៅ ${toKhmerNum(remaining)} នាទីទៀត។</span>`;
+                        return;
+                    }
+                }
+                if (rec.lastAction === 'ចេញ' && rec.scanOutTimestamp) {
+                    let diffMins = Math.floor((nowTime - rec.scanOutTimestamp) / 60000);
+                    if (diffMins < lockMins) {
+                        let remaining = lockMins - diffMins;
+                        msg.innerHTML = `<span class='text-yellow-500'>🔒 ជាប់សោរ! អាចស្កេនចេញម្តងទៀតនៅ ${toKhmerNum(remaining)} នាទីទៀត។</span>`;
+                        return;
+                    }
+                }
+            }
+            // ---- END LOCK CHECKING ----
+
+            const v = document.getElementById('videoElement');
+            if (v.classList.contains('hidden')) { msg.innerHTML = `<span class='text-red-500'>${currentLang==='kh'?'សូមបើកកាមេរ៉ាសិន!':'Turn on camera!'}</span>`; return; }
+            
+            const btnIn = document.getElementById('btnScanIn');
+            const btnOut = document.getElementById('btnScanOut');
+            const img = captureImage();
+            
+            const emp = employeeDB.find(e => e.id === id) || { name: 'Unknown', role: 'Staff', shift: '17:00' };
+            const now = new Date();
+            const timeStr = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Phnom_Penh', hour: '2-digit', minute: '2-digit', hour12: false }).format(now);
+            const dateStr = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Phnom_Penh', day: '2-digit', month: '2-digit', year: 'numeric' }).format(now);
+
+            let remark = "ទាន់ពេលល្អ ✅";
+            let penaltyAmt = 0;
+            let timeDiff = 0;
+            
+            let currH = now.getHours();
+            let currM = now.getMinutes();
+            let actualMins = (currH < 12 ? currH + 24 : currH) * 60 + currM;
+
+            if (type === 'ចូល') {
+                let isFirstScanIn = !attendanceRecords[id].inToday;
+                attendanceRecords[id].present = true; 
+                attendanceRecords[id].inToday = true; 
+                attendanceRecords[id].scanInDate = dateStr;
+                attendanceRecords[id].lastAction = 'ចូល';
+                
+                attendanceRecords[id].scanInTimestamp = Date.now(); // Record exact time for 300 min lock
+                attendanceRecords[id].scanInMins = actualMins;
+                attendanceRecords[id].scanInTimeStr = timeStr;
+
+                let startH = emp.startH !== undefined ? emp.startH : 17;
+                let expectedMins = (startH < 12 ? startH + 24 : startH) * 60 + (emp.startM || 0);
+                
+                if (actualMins > expectedMins) { 
+                    timeDiff = actualMins - expectedMins; 
+                    attendanceRecords[id].late += timeDiff; 
+                    
+                    if (timeDiff >= 60) penaltyAmt = 10;
+                    else if (timeDiff >= 30) penaltyAmt = 5;
+                    else if (timeDiff >= 15) penaltyAmt = 3;
+                    
+                    if (penaltyAmt > 0) {
+                        attendanceRecords[id].penalty = (attendanceRecords[id].penalty || 0) + penaltyAmt;
+                        remark = `យឺត ${timeDiff}នាទី (ផាកពិន័យ -$${penaltyAmt})`; 
+                    } else {
+                        remark = `យឺត ${timeDiff}នាទី (មិនទាន់ដល់កម្រិតពិន័យ)`;
+                    }
+                } else {
+                    remark = "ទាន់ពេលល្អ ✅";
+                    if (isFirstScanIn) {
+                        attendanceRecords[id].monthlyPunctualDays = (attendanceRecords[id].monthlyPunctualDays || 0) + 1;
+                    }
+                }
+            } else {
+                attendanceRecords[id].present = true; 
+                attendanceRecords[id].scanOutDate = dateStr;
+                attendanceRecords[id].lastAction = 'ចេញ';
+                
+                attendanceRecords[id].scanOutTimestamp = Date.now(); // Record exact time for 300 min lock
+                
+                let endH = emp.endH !== undefined ? emp.endH : 2;
+                let expectedMins = (endH < 12 ? endH + 24 : endH) * 60 + (emp.endM || 0);
+                
+                if (actualMins < expectedMins) {
+                    timeDiff = expectedMins - actualMins;
+                    attendanceRecords[id].earlyOut = (attendanceRecords[id].earlyOut || 0) + timeDiff;
+                    penaltyAmt = timeDiff * 1; 
+                    attendanceRecords[id].penalty = (attendanceRecords[id].penalty || 0) + penaltyAmt;
+                    
+                    remark = `ចេញមុន ${timeDiff}នាទី (ផាកពិន័យ -$${penaltyAmt})`;
+                } else {
+                    remark = !attendanceRecords[id].inToday ? "ភ្លេចស្កេនចូល ⚠️" : "ចេញពីធ្វើការធម្មតា ✅";
+                }
+            }
+
+            // Save data locally FIRST
+            localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords));
+
+            // 🔥 Update Admin UI (Dashboard & Payroll) INSTANTLY right here
+            if (currentUserRole) {
+                renderTables();
+            }
+
+            // Update UI buttons instantly to lock state
+            const s = document.getElementById('empSelect');
+            if(s) s.onchange();
+
+            // Temporary disable to prevent double clicks during processing
+            btnIn.disabled = true; 
+            btnOut.disabled = true;
+
+            // មុខងារចាប់យកទីតាំង GPS ពិតប្រាកដតាមទូរស័ព្ទដៃ
+            msg.innerHTML = `<span class='text-cyan-400 animate-pulse'>${currentLang==='kh'?'កំពុងចាប់ទីតាំង GPS និងផ្ញើសារ...':'Getting GPS & Sending...'}</span>`;
+            
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        let lat = position.coords.latitude;
+                        let lon = position.coords.longitude;
+                        let locationLink = `https://maps.google.com/?q=${lat},${lon}`;
+                        sendToServer(locationLink);
+                    },
+                    (error) => {
+                        sendToServer("ជួបស្នេហ៍ផាប់ (មិនអាចទាញយក GPS បាន)");
+                    },
+                    { timeout: 10000, enableHighAccuracy: true }
+                );
+            } else {
+                sendToServer("ជួបស្នេហ៍ផាប់ (ឧបករណ៍មិនស្គាល់ GPS)");
+            }
+
+            // អនុគមន៍បញ្ជូនទិន្នន័យចុងក្រោយទៅកាន់ Server
+            function sendToServer(gpsLocation) {
+                fetch(APPS_SCRIPT_WEB_APP_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    body: JSON.stringify({ 
+                        empId: id, empName: emp.name, empRole: emp.role, empShift: emp.shift || " Flexible", 
+                        type: type, remark: remark, exactTime: timeStr, exactDate: dateStr, imageBase64: img,
+                        locationLink: gpsLocation
+                    })
+                }).then(() => {
+                    msg.innerHTML = `<span class='text-green-400 font-bold tracking-widest'>✅ ${currentLang==='kh'?'ជោគជ័យ!':'Success!'}</span>`;
+                    
+                    const overlay = document.getElementById('verifyOverlay');
+                    if(overlay) {
+                        overlay.classList.add('show');
+                        setTimeout(() => { overlay.classList.remove('show'); }, 2000);
+                    }
+
+                    setTimeout(() => { 
+                        msg.innerHTML = ''; 
+                        btnIn.disabled = false; // re-enable for next user selection
+                        btnOut.disabled = false;
+                        s.value = ''; 
+                        s.onchange(); 
+                    }, 2500);
+                }).catch(() => { 
+                    msg.innerHTML = `<span class='text-red-500'>❌ ${currentLang==='kh'?'កំហុសបណ្តាញ':'Network Error'}</span>`; 
+                    btnIn.disabled = false; // re-enable for next user selection
+                    btnOut.disabled = false;
+                    if(s) s.onchange();
+                });
+            }
+        }
+
+        // មុខងារ Admin លុបបុគ្គលិកចេញពីប្រព័ន្ធ
+        function deleteEmployee(id) {
+            customConfirm(currentLang==='kh'?'តើអ្នកពិតជាចង់លុបទិន្នន័យបុគ្គលិកនេះចេញពីប្រព័ន្ធមែនទេ?':'Are you sure you want to delete this employee?', () => {
+                employeeDB = employeeDB.filter(e => e.id !== id);
+                localStorage.setItem('nse_employees', JSON.stringify(employeeDB));
+                
+                // Optional: Remove attendance records as well
+                delete attendanceRecords[id];
+                localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords));
+                
+                renderTables();
+                populateDropdown();
+                customAlert(currentLang==='kh'?'លុបបុគ្គលិកជោគជ័យ!':'Deleted successfully!');
+            });
+        }
+
+        // មុខងារ Admin ដោះសោរ (Unlock) ថ្មី - ឱ្យជ្រើសរើស លុបចូល ឬ លុបចេញ
+        function unlockEmployee(id) {
+            const e = employeeDB.find(x => x.id === id);
+            const rec = attendanceRecords[id];
+            
+            if (!rec || (!rec.scanInTimestamp && !rec.scanOutTimestamp)) {
+                customAlert(currentLang==='kh'?'បុគ្គលិកនេះមិនទាន់មានទិន្នន័យស្កេនដែលត្រូវលុបទេ!':'No scan data to reset!');
+                return;
+            }
+
+            const d = document.getElementById('customDialog');
+            document.getElementById('dialogMessage').innerHTML = currentLang === 'kh'
+                ? `តើអ្នកចង់លុបទិន្នន័យស្កេនមួយណាសម្រាប់ <b>${e.name}</b>?`
+                : `Which scan data do you want to reset for <b>${e.name}</b>?`;
+
+            document.getElementById('dialogButtons').innerHTML = `
+                <div class="flex flex-col gap-2 w-full">
+                    <button onclick="executeUnlock(${id}, 'in')" class="bg-green-600 hover:bg-green-500 py-3 rounded-lg text-white font-bold w-full text-sm">🟢 លុបទិន្នន័យស្កេនចូល (Reset IN)</button>
+                    <button onclick="executeUnlock(${id}, 'out')" class="bg-red-600 hover:bg-red-500 py-3 rounded-lg text-white font-bold w-full text-sm">🔴 លុបទិន្នន័យស្កេនចេញ (Reset OUT)</button>
+                    <button onclick="document.getElementById('customDialog').classList.add('hidden')" class="bg-gray-600 hover:bg-gray-500 py-3 rounded-lg text-white font-bold w-full text-sm">បោះបង់ (Cancel)</button>
+                </div>
+            `;
+            d.classList.remove('hidden');
+        }
+
+        // អនុគមន៍លុបទិន្នន័យស្កេនពិតប្រាកដ
+        function executeUnlock(id, type) {
+            document.getElementById('customDialog').classList.add('hidden');
+            if (type === 'in') {
+                attendanceRecords[id].inToday = false;
+                attendanceRecords[id].scanInTimestamp = 0;
+                attendanceRecords[id].scanInTimeStr = '';
+                attendanceRecords[id].scanInDate = '';
+                attendanceRecords[id].lastAction = ''; // Reset action completely
+            } else if (type === 'out') {
+                attendanceRecords[id].scanOutTimestamp = 0;
+                attendanceRecords[id].scanOutDate = '';
+                attendanceRecords[id].lastAction = 'ចូល'; // Revert state back to IN, so they can OUT again
+            }
+            
+            localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords));
+            renderTables();
+            
+            const s = document.getElementById('empSelect');
+            if(s && s.value == id) s.onchange(); // Update lock buttons UI immediately if currently selected
+            
+            customAlert(currentLang==='kh'?'លុបទិន្នន័យដើម្បីដោះសោរជោគជ័យ!':'Reset successfully!');
+        }
+
+        function setupImageUpload() {
+            const fileInput = document.getElementById('empEditImgFile');
+            if (!fileInput) return;
+            
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 150;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                        } else {
+                            if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                        }
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7); 
+                        
+                        document.getElementById('empEditImgBase64').value = dataUrl;
+                        const preview = document.getElementById('empEditImgPreview');
+                        if (preview) {
+                            preview.src = dataUrl;
+                            preview.classList.remove('hidden');
+                        }
+                        const icon = document.getElementById('empEditImgIcon');
+                        if (icon) icon.classList.add('hidden');
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function renderTables() {
+            try {
+                const present = Object.keys(attendanceRecords).filter(k => attendanceRecords[k]?.present).length;
+                const lateCount = Object.values(attendanceRecords).filter(r => (r?.late > 0 || r?.earlyOut > 0)).length;
+                
+                const elTotal = document.getElementById('dashTotalEmp'); if(elTotal) elTotal.innerText = toKhmerNum(employeeDB.length);
+                const elPresent = document.getElementById('dashPresent'); if(elPresent) elPresent.innerText = toKhmerNum(present);
+                const elLate = document.getElementById('dashLate'); if(elLate) elLate.innerText = toKhmerNum(lateCount);
+                const elAbsent = document.getElementById('dashAbsent'); if(elAbsent) elAbsent.innerText = toKhmerNum(employeeDB.length - present);
+
+                const eBody = document.getElementById('employeeTableBody');
+                const pBody = document.getElementById('payrollTableBody');
+                if(!eBody || !pBody) return; 
+                
+                eBody.innerHTML = ''; pBody.innerHTML = '';
+                let sBase=0, sPen=0, sHol=0, sBon=0, sNet=0;
+                
+                employeeDB.forEach(e => {
+                    const imgStr = e.img ? `<img src="${e.img}" class="w-10 h-10 object-cover rounded-full shadow-md border border-cyan-500 mx-auto">` : `<div class="w-10 h-10 bg-gray-700 rounded-full flex flex-row items-center justify-center text-xs font-bold text-white shadow-inner mx-auto">${e.name ? e.name[0] : '?'}</div>`;
+                    const safeShift = (e.shift || "N/A");
+                    const safeSalary = parseFloat(e.salary) || 0;
+
+                    // Updated Action column to include Edit, Unlock, and Delete buttons
+                    eBody.innerHTML += `<tr>
+                        <td class="p-4 flex flex-col items-center justify-center text-center">${imgStr}</td>
+                        <td class="text-left">#${toKhmerNum(e.id)} - ${e.name||'N/A'}</td>
+                        <td class="text-left">${e.role||'N/A'}</td>
+                        <td class="font-tech">${toKhmerNum(safeShift)}</td>
+                        <td class="text-green-400">$${toKhmerNum(safeSalary)}</td>
+                        <td class="admin-only ${currentUserRole==='admin'?'':'hidden'}">
+                            <div class="flex gap-4 justify-center items-center bg-gray-900/50 py-1.5 px-3 rounded-lg border border-gray-700/50 w-max mx-auto">
+                                <button onclick="openEmpModal(${e.id})" class="text-cyan-400 hover:text-cyan-300 transition-colors hover:scale-110" title="កែប្រែទិន្នន័យ/ដាក់រូបថត"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                <div class="w-px h-4 bg-gray-700"></div>
+                                <button onclick="unlockEmployee(${e.id})" class="text-yellow-500 hover:text-yellow-400 transition-colors hover:scale-110" title="ដោះសោរស្កេន"><i data-lucide="unlock" class="w-4 h-4"></i></button>
+                                <div class="w-px h-4 bg-gray-700"></div>
+                                <button onclick="deleteEmployee(${e.id})" class="text-red-500 hover:text-red-400 transition-colors hover:scale-110" title="លុបបុគ្គលិក"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </td>
+                    </tr>`;
+                    
+                    const r = attendanceRecords[e.id] || { late: 0, earlyOut: 0, penalty: 0, holidayPenalty: 0, bonuses: 0 };
+                    let totalTimeOff = (r.late || 0) + (r.earlyOut || 0);
+                    let sysPenalty = (r.penalty || 0);
+                    let holPenalty = (r.holidayPenalty || 0);
+                    
+                    let net = safeSalary - sysPenalty - holPenalty + (parseFloat(r.bonuses) || 0);
+                    
+                    sBase += safeSalary; sPen += sysPenalty; sHol += holPenalty; sBon += (parseFloat(r.bonuses)||0); sNet += net;
+                    
+                    pBody.innerHTML += `<tr>
+                        <td class="px-2 py-2">${toKhmerNum(e.id)}</td>
+                        <td class="px-2 py-2 text-left">${e.name||'N/A'}</td>
+                        <td class="px-2 py-2 text-left">${e.role||'N/A'}</td>
+                        <td class="px-2 py-2">$${toKhmerNum(safeSalary)}</td>
+                        <td class="px-2 py-2 text-yellow-500">${formatLateTime(totalTimeOff)}</td>
+                        <td class="px-2 py-2 text-red-400">-$${toKhmerNum(sysPenalty)} <input type="number" value="${r.manualDeduct||0}" onchange="updatePayrollVal(${e.id}, 'manualDeduct', this.value)" class="editable-input text-[10px] ml-1" style="width: 45px;" ${currentUserRole==='hr'?'disabled':''}></td>
+                        <td class="px-2 py-2 text-purple-400">-$${toKhmerNum(holPenalty)} <button onclick="toggleHolidayPenalty(${e.id}, ${safeSalary})" class="bg-purple-900/50 px-1 py-0.5 rounded text-[10px] ml-1 hover:bg-purple-800 transition-colors ${currentUserRole==='hr'?'hidden':''}"><i data-lucide="calendar-x" class="w-3 h-3 inline"></i> x2</button></td>
+                        <td class="px-2 py-2 text-blue-400">+$ <input type="number" value="${r.bonuses||0}" onchange="updatePayrollVal(${e.id}, 'bonuses', this.value)" class="editable-input text-[10px]" style="width: 45px;" ${currentUserRole==='hr'?'disabled':''}></td>
+                        <td class="px-2 py-2 text-green-400 font-bold text-base">$${toKhmerNum(net)}</td>
+                        <td class="px-2 py-2 text-center align-middle"><button onclick="triggerPrint('slip', ${e.id})" class="bg-gray-800 px-2 py-1 rounded-lg hover:bg-cyan-700 transition-all text-[10px] font-tech text-white shadow-md border border-gray-600 inline-flex items-center justify-center gap-1 mx-auto"><i data-lucide="receipt" class="w-3 h-3"></i> Slip</button></td>
+                    </tr>`;
+                });
+                
+                payrollTotals = { tBase: sBase, tPen: sPen, tHol: sHol, tBon: sBon, tNet: sNet };
+                
+                renderLeaderboard(); 
+                
+                document.querySelectorAll('[data-kh]').forEach(el => {
+                    const val = el.getAttribute(`data-${currentLang}`) || el.getAttribute('data-kh');
+                    if (el.tagName === 'INPUT') el.placeholder = val; else el.innerHTML = val;
+                });
+
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch (err) {
+                console.error("Render error prevented:", err);
+            }
+        }
+
+        function showListModal(type) {
+            const modal = document.getElementById('listModal');
+            const title = document.getElementById('listModalTitle');
+            const content = document.getElementById('listModalContent');
+            if(!modal) return;
+            content.innerHTML = '';
+            
+            let list = [];
+            if(type === 'all') { 
+                title.innerHTML = `<i data-lucide="users" class="w-5 h-5"></i> <span data-kh="បុគ្គលិកសរុប" data-en="Total Staff">${currentLang==='kh'?'បុគ្គលិកសរុប':'Total Staff'}</span>`; 
+                list = employeeDB; 
+            } else if(type === 'present') { 
+                title.innerHTML = `<i data-lucide="user-check" class="w-5 h-5 text-green-500"></i> <span data-kh="មកធ្វើការ" data-en="Present">${currentLang==='kh'?'មកធ្វើការ':'Present'}</span>`; 
+                list = employeeDB.filter(e => attendanceRecords[e.id]?.present); 
+            } else if(type === 'absent') { 
+                title.innerHTML = `<i data-lucide="user-minus" class="w-5 h-5 text-red-500"></i> <span data-kh="អវត្តមាន" data-en="Absent">${currentLang==='kh'?'អវត្តមាន':'Absent'}</span>`; 
+                list = employeeDB.filter(e => !attendanceRecords[e.id]?.present); 
+            } else if(type === 'late') { 
+                title.innerHTML = `<i data-lucide="clock" class="w-5 h-5 text-yellow-500"></i> <span data-kh="មកយឺត" data-en="Late">${currentLang==='kh'?'មកយឺត/ចេញមុន':'Late/Early Out'}</span>`; 
+                list = employeeDB.filter(e => (attendanceRecords[e.id]?.late > 0 || attendanceRecords[e.id]?.earlyOut > 0)); 
+            }
+
+            if(list.length === 0) {
+                content.innerHTML = `<div class="text-center text-gray-500 py-4 font-bold text-sm" data-kh="គ្មានទិន្នន័យ" data-en="No Data">${currentLang==='kh'?'គ្មានទិន្នន័យ':'No Data'}</div>`;
+            } else {
+                list.forEach(e => {
+                    const r = attendanceRecords[e.id];
+                    let extra = '';
+                    if (type === 'late') {
+                        let totalLate = (r?.late || 0) + (r?.earlyOut || 0);
+                        extra = `<span class="text-red-400 font-bold text-sm bg-red-900/30 px-2 py-1 rounded">${formatLateTime(totalLate)}</span>`;
+                    } else {
+                        extra = `<span class="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">${e.role}</span>`;
+                    }
+                    content.innerHTML += `<div class="flex justify-between border-b border-gray-800/50 py-3 items-center"><span class="text-sm font-bold text-gray-200">#${toKhmerNum(e.id)} - ${e.name}</span> ${extra}</div>`;
+                });
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            modal.classList.remove('hidden');
+        }
+
+        function toggleHolidayPenalty(id, salary) {
+            if(!attendanceRecords[id]) attendanceRecords[id] = { late:0, present:false, penalty:0, holidayPenalty:0, bonuses:0 };
+            const isApplied = attendanceRecords[id].holidayPenalty > 0;
+            if (isApplied) {
+                attendanceRecords[id].holidayPenalty = 0; 
+            } else {
+                attendanceRecords[id].holidayPenalty = Math.round((salary / 30) * 2); 
+            }
+            localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords)); renderTables();
+        }
+
+        function updatePayrollVal(id, field, val) {
+            if(!attendanceRecords[id]) attendanceRecords[id] = { late:0, present:false, penalty:0, holidayPenalty:0, bonuses:0 };
+            attendanceRecords[id][field] = parseFloat(val) || 0;
+            if (field === 'manualDeduct') {
+                attendanceRecords[id].penalty = (attendanceRecords[id].penalty || 0) + (parseFloat(val) || 0);
+            }
+            localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords)); renderTables();
+        }
+
+        function openEmpModal(id = null) {
+            document.getElementById('empModal').classList.remove('hidden');
+            const title = document.getElementById('empModalTitle');
+            const fileInput = document.getElementById('empEditImgFile');
+            const base64Input = document.getElementById('empEditImgBase64');
+            const preview = document.getElementById('empEditImgPreview');
+            const icon = document.getElementById('empEditImgIcon');
+
+            if(fileInput) fileInput.value = ''; 
+            if(base64Input) base64Input.value = '';
+
+            if(id) {
+                const e = employeeDB.find(x => x.id === id);
+                title.innerText = currentLang === 'kh' ? 'កែប្រែទិន្នន័យ' : 'Edit Data';
+                document.getElementById('empEditId').value = e.id; 
+                document.getElementById('empEditName').value = e.name || '';
+                document.getElementById('empEditRole').value = e.role || ''; 
+                document.getElementById('empEditSalary').value = e.salary || 0;
+                document.getElementById('empEditSH').value = e.startH !== undefined ? e.startH : 17; 
+                document.getElementById('empEditSM').value = e.startM || 0;
+                document.getElementById('empEditEH').value = e.endH !== undefined ? e.endH : 2; 
+                document.getElementById('empEditEM').value = e.endM || 0;
+
+                if(e.img && preview) {
+                    base64Input.value = e.img;
+                    preview.src = e.img;
+                    preview.classList.remove('hidden');
+                    if(icon) icon.classList.add('hidden');
+                } else {
+                    if(preview) { preview.src = ''; preview.classList.add('hidden'); }
+                    if(icon) icon.classList.remove('hidden');
+                }
+            } else {
+                title.innerText = currentLang === 'kh' ? 'បន្ថែមថ្មី' : 'Add New';
+                document.getElementById('empEditId').value = ''; 
+                document.getElementById('empEditName').value = '';
+                document.getElementById('empEditRole').value = '';
+                document.getElementById('empEditSalary').value = '';
+                document.getElementById('empEditSH').value = ''; 
+                document.getElementById('empEditSM').value = '';
+                document.getElementById('empEditEH').value = ''; 
+                document.getElementById('empEditEM').value = '';
+
+                if(preview) { preview.src = ''; preview.classList.add('hidden'); }
+                if(icon) icon.classList.remove('hidden');
+            }
+        }
+
+        function saveEmployee() {
+            const id = document.getElementById('empEditId').value;
+            
+            if (!id && employeeDB.length >= 50) {
+                customAlert(currentLang === 'kh' ? 'ប្រព័ន្ធអនុញ្ញាតត្រឹម ៥០នាក់ប៉ុណ្ណោះ!' : 'Maximum 50 employees allowed!');
+                return;
+            }
+
+            const obj = { 
+                id: id ? parseInt(id) : (employeeDB.length > 0 ? Math.max(...employeeDB.map(e => e.id)) + 1 : 1), 
+                name: document.getElementById('empEditName').value || 'Unknown', 
+                role: document.getElementById('empEditRole').value || 'Staff', 
+                salary: parseFloat(document.getElementById('empEditSalary').value) || 0, 
+                img: document.getElementById('empEditImgBase64').value || '',
+                startH: parseInt(document.getElementById('empEditSH').value) || 17,
+                startM: parseInt(document.getElementById('empEditSM').value) || 0,
+                endH: parseInt(document.getElementById('empEditEH').value) || 2,
+                endM: parseInt(document.getElementById('empEditEM').value) || 0
+            };
+            const sh = obj.startH.toString().padStart(2, '0');
+            const sm = obj.startM.toString().padStart(2, '0');
+            const eh = obj.endH.toString().padStart(2, '0');
+            const em = obj.endM.toString().padStart(2, '0');
+            obj.shift = `${sh}:${sm} - ${eh}:${em}`; 
+
+            if(id) { const i = employeeDB.findIndex(x => x.id == id); employeeDB[i] = obj; } else employeeDB.push(obj);
+            localStorage.setItem('nse_employees', JSON.stringify(employeeDB));
+            document.getElementById('empModal').classList.add('hidden'); renderTables(); populateDropdown();
+        }
+
+        function savePins() {
+            const a = document.getElementById('newAdminPin').value;
+            const h = document.getElementById('newHrPin').value;
+            if(a) { adminPin = a; localStorage.setItem('adminPin', a); }
+            if(h) { hrPin = h; localStorage.setItem('hrPin', h); }
+            customAlert(currentLang === 'kh' ? 'រក្សាទុកជោគជ័យ!' : 'Saved successfully!');
+        }
+
+        function exportBackup() {
+            const b = new Blob([JSON.stringify({ emp: employeeDB, att: attendanceRecords })], {type: "application/json"});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `NSE_Backup_${Date.now()}.json`; a.click();
+        }
+
+        function exportToExcel() {
+            let csv = "\uFEFFល.រ,ឈ្មោះ,តួនាទី,ប្រាក់គោល,យឺត/ចេញមុន(នាទី),ប្រាក់កាត់,អវត្តមានបុណ្យ,ប្រាក់បន្ថែម,ប្រាក់ត្រូវបើក\n";
+            employeeDB.forEach((e, i) => {
+                let r = attendanceRecords[e.id] || { late:0, earlyOut:0, penalty:0, holidayPenalty:0, bonuses:0 };
+                let safeSalary = parseFloat(e.salary) || 0;
+                let net = safeSalary - (r.penalty||0) - (r.holidayPenalty||0) + (parseFloat(r.bonuses)||0);
+                csv += `"${i+1}","${e.name||''}","${e.role||''}","$${safeSalary}","${(r.late||0)+(r.earlyOut||0)}","-$${r.penalty||0}","-$${r.holidayPenalty||0}","+$${parseFloat(r.bonuses)||0}","$${net}"\n`;
+            });
+            csv += `,,សរុបរួម:,$${payrollTotals.tBase},,-$${payrollTotals.tPen},-$${payrollTotals.tHol},+$${payrollTotals.tBon},$${payrollTotals.tNet}\n`;
+            const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })); link.download = `NSE_Payroll_${Date.now()}.csv`; link.click();
+        }
+
+        function generateMockData() { 
+            // ទិន្នន័យនិងម៉ោងស្កេនចូលជាក់លាក់តាមសំណើ
+            const specificScans = {
+                15: { h: 18, m: 5, ms: 0 },
+                16: { h: 18, m: 5, ms: 1000 },
+                2:  { h: 18, m: 6, ms: 0 },
+                6:  { h: 18, m: 6, ms: 1000 },
+                26: { h: 18, m: 9, ms: 0 },
+                4:  { h: 18, m: 15, ms: 0 },
+                18: { h: 18, m: 16, ms: 0 },
+                17: { h: 18, m: 19, ms: 0 },
+                10: { h: 18, m: 21, ms: 0 },
+                1:  { h: 18, m: 30, ms: 0 },
+                20: { h: 19, m: 1, ms: 0 },
+                7:  { h: 19, m: 28, ms: 0 } // បានបន្ថែម ល.រ ៧ ម៉ោង 19:28
+            };
+
+            let now = new Date();
+            let dateStr = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Phnom_Penh', day: '2-digit', month: '2-digit', year: 'numeric' }).format(now);
+
+            attendanceRecords = {}; // ធ្វើការ Reset ទិន្នន័យទាំងអស់ដើម្បីដាក់ថ្មី
+
+            employeeDB.forEach(e => { 
+                let mockPunctual = Math.floor(Math.random() * 26); 
+
+                if (specificScans[e.id]) {
+                    // បង្កើតម៉ោងពិតប្រាកដសម្រាប់អ្នកដែលបានស្កេន
+                    let scanTime = new Date(now);
+                    scanTime.setHours(specificScans[e.id].h, specificScans[e.id].m, 0, specificScans[e.id].ms);
+                    
+                    let timeStr = `${String(specificScans[e.id].h).padStart(2, '0')}:${String(specificScans[e.id].m).padStart(2, '0')}`;
+
+                    attendanceRecords[e.id] = { 
+                        present: true, 
+                        late: 0, 
+                        earlyOut: 0, 
+                        penalty: 0, 
+                        holidayPenalty: 0, 
+                        bonuses: 0, 
+                        inToday: true, 
+                        scanInDate: dateStr, 
+                        scanOutDate: '', 
+                        lastAction: 'ចូល', 
+                        scanInTimestamp: scanTime.getTime(), 
+                        scanOutTimestamp: 0, 
+                        scanInMins: specificScans[e.id].h * 60 + specificScans[e.id].m, 
+                        scanInTimeStr: timeStr, 
+                        monthlyPunctualDays: mockPunctual 
+                    }; 
+                } else {
+                    // អ្នកមិនស្ថិតក្នុងបញ្ជីតេស្ត ទុកជាអវត្តមាន
+                    attendanceRecords[e.id] = { 
+                        present: false, late: 0, earlyOut: 0, penalty: 0, holidayPenalty: 0, bonuses: 0, 
+                        inToday: false, scanInDate: '', scanOutDate: '', lastAction: '', 
+                        scanInTimestamp: 0, scanOutTimestamp: 0, 
+                        monthlyPunctualDays: mockPunctual 
+                    }; 
+                }
+            });
+            
+            localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords)); 
+            localStorage.removeItem('nse_leaderboard_stats'); // Clear cached stats
+            renderTables(); 
+            
+            // ធ្វើឱ្យ UI ចាក់សោរប៊ូតុង "ចូល" ភ្លាមៗបើកំពុងនៅផ្ទាំងស្កេន
+            const s = document.getElementById('empSelect');
+            if(s) s.onchange();
+            
+            customAlert(currentLang === 'kh' ? 'បានចាក់បញ្ចូលទិន្នន័យតេស្ត និងតម្រៀបកិត្តិយសជោគជ័យ!' : 'Mock Data Generated!');
+        }
+
+        function renderLeaderboard() {
+            const dailyContainer = document.getElementById('leaderboardDaily');
+            const monthlyContainer = document.getElementById('leaderboardMonthly');
+            if (!dailyContainer || !monthlyContainer) return;
+
+            let nowTs = Date.now();
+            let nowObj = new Date();
+            let sixteenHours = 16 * 60 * 60 * 1000; // កំណត់ ១៦ម៉ោង ទុកជា១ថ្ងៃធ្វើការ (Reset ស្វ័យប្រវត្តិ)
+
+            // --- បង្កើតថ្ងៃខែឆ្នាំខ្មែរស្វ័យប្រវត្តិ ---
+            const d = String(nowObj.getDate()).padStart(2, '0');
+            const m = nowObj.getMonth();
+            const y = nowObj.getFullYear();
+            const monthsKH = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+            const monthsEN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            
+            let dailyDateText = currentLang === 'kh' ? `ថ្ងៃទី ${toKhmerNum(d)} ខែ ${monthsKH[m]} ឆ្នាំ ${toKhmerNum(y)}` : `${d} ${monthsEN[m]} ${y}`;
+            let monthlyDateText = currentLang === 'kh' ? `ខែ ${monthsKH[m]} ឆ្នាំ ${toKhmerNum(y)}` : `${monthsEN[m]} ${y}`;
+
+            const dailyTitleEl = document.getElementById('dailyHofDate');
+            const monthlyTitleEl = document.getElementById('monthlyHofDate');
+            if (dailyTitleEl) dailyTitleEl.innerText = dailyDateText;
+            if (monthlyTitleEl) monthlyTitleEl.innerText = monthlyDateText;
+
+            // --- ការ Update តារាងប្រចាំថ្ងៃ ភ្លាមៗ (Instant Update) ---
+            let dailyEmps = employeeDB.filter(e => {
+                let rec = attendanceRecords[e.id];
+                // យកតែអ្នកស្កេនក្នុងរយៈពេល ១៦ម៉ោង ចុងក្រោយប៉ុណ្ណោះ
+                return rec && rec.scanInTimestamp && (nowTs - rec.scanInTimestamp < sixteenHours);
+            });
+            
+            // តម្រៀបតាមម៉ោងអ្នកមកមុនគេ បង្ហាញមុន
+            dailyEmps.sort((a, b) => attendanceRecords[a.id].scanInTimestamp - attendanceRecords[b.id].scanInTimestamp);
+            let dailyTop5 = dailyEmps.slice(0, 5);
+
+            // --- ការ Update តារាងប្រចាំខែ រៀងរាល់ ៧ថ្ងៃម្តង (Cache Data) ---
+            let stats = JSON.parse(localStorage.getItem('nse_leaderboard_stats') || '{}');
+            const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000; // ៧ថ្ងៃ
+
+            if (!stats.monthlyTopIds || !stats.lastUpdate || (nowTs - stats.lastUpdate > SEVEN_DAYS)) {
+                let monthlyEmps = employeeDB.filter(e => (attendanceRecords[e.id]?.monthlyPunctualDays || 0) > 0);
+                monthlyEmps.sort((a, b) => attendanceRecords[b.id].monthlyPunctualDays - attendanceRecords[a.id].monthlyPunctualDays);
+                stats.monthlyTopIds = monthlyEmps.slice(0, 5).map(e => e.id);
+                stats.lastUpdate = nowTs;
+                localStorage.setItem('nse_leaderboard_stats', JSON.stringify(stats));
+            }
+            let monthlyTop5 = (stats.monthlyTopIds || []).map(id => employeeDB.find(e => e.id === id)).filter(Boolean);
+
+            // ប្រើប្រាស់ Emojis ដូចរូបភាពដើម (Font មិនបែក)
+            const medalsHTMLDaily = [
+                '<div class="relative flex flex-col items-center justify-center leading-none mt-1"><span class="text-[17px] drop-shadow-[0_0_5px_rgba(255,215,0,0.8)] animate-pulse absolute -top-[14px] z-10" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">👑</span><span class="text-[26px] drop-shadow-md relative z-0" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">🥇</span></div>',
+                '<span class="text-[28px] drop-shadow-md leading-none" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">🥈</span>',
+                '<span class="text-[28px] drop-shadow-md leading-none" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">🥉</span>',
+                '<span class="text-[28px] drop-shadow-md leading-none" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">🏅</span>',
+                '<span class="text-[28px] drop-shadow-md leading-none" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">🏅</span>'
+            ];
+            
+            const medalsHTMLMonthly = [
+                '<div class="relative flex flex-col items-center justify-center leading-none mt-1 hue-rotate-180"><span class="text-[17px] drop-shadow-[0_0_5px_rgba(0,246,255,0.8)] animate-pulse absolute -top-[14px] z-10" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">👑</span><span class="text-[26px] drop-shadow-md relative z-0" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">🥇</span></div>',
+                '<span class="text-[28px] drop-shadow-md leading-none" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">🥈</span>',
+                '<span class="text-[28px] drop-shadow-md leading-none" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">🥉</span>',
+                '<span class="text-[28px] drop-shadow-md leading-none" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">🏅</span>',
+                '<span class="text-[28px] drop-shadow-md leading-none" style="font-family:\'Apple Color Emoji\',\'Segoe UI Emoji\';">🏅</span>'
+            ];
+            
+            const bgColorsDaily = [
+                'bg-gradient-to-r from-yellow-900/80 to-yellow-700/40 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.4)]', 
+                'bg-[#1a2035] border-gray-600/50', 
+                'bg-[#1a2035] border-gray-600/50', 
+                'bg-[#1a2035] border-gray-600/50', 
+                'bg-[#1a2035] border-gray-600/50'  
+            ];
+
+            const bgColorsMonthly = [
+                'bg-gradient-to-r from-cyan-900/80 to-cyan-700/40 border-cyan-400 shadow-[0_0_15px_rgba(0,246,255,0.4)]', 
+                'bg-[#1a2035] border-gray-600/50', 
+                'bg-[#1a2035] border-gray-600/50', 
+                'bg-[#1a2035] border-gray-600/50', 
+                'bg-[#1a2035] border-gray-600/50'  
+            ];
+            
+            // អនុគមន៍ជំនួយសម្រាប់បង្កើតកាត Dynamic
+            const createCardHTML = (e, i, rightText, bgClass, isCyanTheme) => {
+                const themeColor = isCyanTheme ? 'text-cyan-300' : 'text-yellow-300';
+                const nameStyle = i === 0 ? `${themeColor} text-[14px] font-bold` : 'text-gray-100 text-[13px] font-bold';
+                const timeStyle = i === 0 ? `text-[18px] ${themeColor} font-bold` : 'text-[15px] text-cyan-300 font-bold';
+                const medals = isCyanTheme ? medalsHTMLMonthly : medalsHTMLDaily;
+
+                let empName = e ? `${toKhmerNum(e.id)}. ${e.name}` : (currentLang === 'kh' ? 'រង់ចាំទិន្នន័យ...' : 'Waiting...');
+                let empRole = e ? e.role : '-';
+
+                return `
+                    <div class="flex items-center justify-between py-2 px-3 rounded-xl border ${bgClass} mb-2 h-[60px] bg-[#0b1120] ${!e ? 'opacity-50' : ''}">
+                        <div class="flex items-center gap-2 h-full overflow-hidden flex-1">
+                            <div class="flex items-center justify-center w-12 h-full flex-shrink-0">
+                                ${medals[i]}
+                            </div>
+                            <div class="text-left flex flex-col justify-center h-full overflow-hidden flex-1 ml-1 mt-0.5">
+                                <span class="${nameStyle} whitespace-nowrap overflow-hidden">${empName}</span>
+                                <span class="text-[11px] text-gray-400 whitespace-nowrap overflow-hidden mt-0.5">${empRole}</span>
+                            </div>
+                        </div>
+                        <div class="${timeStyle} flex items-center justify-end h-full flex-shrink-0 ml-2 min-w-[70px] text-right">
+                            ${rightText}
+                        </div>
+                    </div>
+                `;
+            };
+
+            // បញ្ចូលកាតប្រចាំថ្ងៃ (តែងតែមាន ៥ Slot ទោះអត់មានអ្នកស្កេនក៏ដោយ)
+            dailyContainer.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                let e = dailyTop5[i] || null;
+                let timeStr = e ? (attendanceRecords[e.id].scanInTimeStr || '--:--') : '--:--';
+                dailyContainer.innerHTML += createCardHTML(e, i, toKhmerNum(timeStr), bgColorsDaily[i], false);
+            }
+
+            // បញ្ចូលកាតប្រចាំខែ (តែងតែមាន ៥ Slot)
+            monthlyContainer.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                let e = monthlyTop5[i] || null;
+                let metricStr = e ? `${toKhmerNum(attendanceRecords[e.id].monthlyPunctualDays || 0)} ថ្ងៃ` : '-- ថ្ងៃ';
+                monthlyContainer.innerHTML += createCardHTML(e, i, metricStr, bgColorsMonthly[i], true);
+            }
+        }
+
+        // អនុគមន៍ Download រូបភាពដាច់ដោយឡែក ដែលមិនបែកអក្សរ
+        function downloadLeaderboard(type) {
+            const cardId = type === 'daily' ? 'hallOfFameDaily' : 'hallOfFameMonthly';
+            const originalCard = document.getElementById(cardId);
+            
+            // បង្កើត Container លាក់ ដើម្បីកុំឱ្យមានការលោត (Flash) លើអេក្រង់ពេលថត
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'absolute';
+            wrapper.style.left = '-9999px';
+            wrapper.style.top = '0';
+            
+            const clonedCard = originalCard.cloneNode(true);
+            
+            // ចាប់បង្ខំទំហំកាតពេលថត ដើម្បីកុំឱ្យធ្លាក់បន្ទាត់ និងបន្ថែម Padding ខាងក្រោមការពារកុំឱ្យដាច់អក្សរ "្ង"
+            clonedCard.style.width = '450px';
+            clonedCard.style.padding = '24px';
+            clonedCard.style.paddingBottom = '32px'; 
+            clonedCard.style.background = '#0b1120';
+            clonedCard.style.fontFamily = "'Battambang', sans-serif";
+            
+            const titles = clonedCard.querySelectorAll('h2');
+            titles.forEach(t => t.style.fontFamily = "'Moul', serif");
+            
+            wrapper.appendChild(clonedCard);
+            document.body.appendChild(wrapper);
+
+            // ប្រើ htmlToImage ជំនួស html2canvas ដើម្បីការពារការបែកជើងអក្សរខ្មែរ (Khmer rendering bug)
+            htmlToImage.toPng(clonedCard, { 
+                backgroundColor: '#0b1120', 
+                pixelRatio: 3 
+            })
+            .then(function(dataUrl) {
+                const link = document.createElement('a');
+                const suffix = type === 'daily' ? 'Daily' : 'Monthly';
+                link.download = `Top5_${suffix}_Attendance_${new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Phnom_Penh' }).format(new Date()).replace(/\//g, '-')}.png`;
+                link.href = dataUrl;
+                link.click();
+            })
+            .catch(function(err) {
+                console.error("Capture failed", err);
+                customAlert(currentLang === 'kh' ? 'បរាជ័យក្នុងការទាញយករូបភាព!' : 'Capture failed!');
+            })
+            .finally(function() {
+                document.body.removeChild(wrapper);
+            });
+        }
+
+        function triggerPrint(type, id = null) {
+            const area = document.getElementById('printContentArea');
+            if(type === 'slip') {
+                const e = employeeDB.find(x => x.id === id) || {}; 
+                const r = attendanceRecords[id] || {late:0, earlyOut:0, penalty:0, holidayPenalty:0, bonuses:0};
+                const safeSalary = parseFloat(e.salary) || 0;
+                
+                area.innerHTML = document.getElementById('slipTemplate').innerHTML;
+                
+                area.querySelector('#p_slip_code').innerText = `ID: #${toKhmerNum(id)}`;
+                area.querySelector('#p_slip_name').innerText = e.name || 'N/A'; 
+                area.querySelector('#p_slip_role').innerText = e.role || 'N/A';
+                area.querySelector('#p_slip_base').innerText = `$${toKhmerNum(safeSalary)}`; 
+                area.querySelector('#p_slip_pen').innerText = `-$${toKhmerNum(r.penalty||0)}`;
+                area.querySelector('#p_slip_holid').innerText = `-$${toKhmerNum(r.holidayPenalty||0)}`;
+                area.querySelector('#p_slip_bon').innerText = `+$${toKhmerNum(parseFloat(r.bonuses)||0)}`; 
+                area.querySelector('#p_slip_net').innerText = `$${toKhmerNum(safeSalary - (r.penalty||0) - (r.holidayPenalty||0) + (parseFloat(r.bonuses)||0))}`;
+                
+                const d = new Date();
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const yyyy = d.getFullYear();
+                area.querySelector('#p_slip_date').innerText = `ថ្ងៃទី${toKhmerNum(dd)}/${toKhmerNum(mm)}/${toKhmerNum(yyyy)}`;
+                
+                area.querySelector('#p_slip_sign').innerText = e.name || ''; 
+            } else {
+                let html = document.getElementById('masterTemplate').innerHTML; 
+                area.innerHTML = html;
+                const tbody = area.querySelector('#p_master_tbody'); 
+                tbody.innerHTML = '';
+                const mStr = new Date().toLocaleDateString('km-KH', {month:'long', year:'numeric'});
+                area.querySelector('#p_master_date').innerText = `ប្រចាំខែ: ${mStr}`;
+                
+                employeeDB.forEach((e, i) => {
+                    const r = attendanceRecords[e.id] || {late:0, earlyOut:0, penalty:0, holidayPenalty:0, bonuses:0};
+                    const safeSalary = parseFloat(e.salary) || 0;
+                    let totalTimeOff = (r.late||0) + (r.earlyOut||0);
+                    let net = safeSalary - (r.penalty||0) - (r.holidayPenalty||0) + (parseFloat(r.bonuses)||0);
+                    tbody.innerHTML += `<tr><td class="p-1 border border-black">${toKhmerNum(i+1)}</td><td class="p-1 border border-black text-left">${e.name||''}</td><td class="p-1 border border-black text-left">${e.role||''}</td><td class="p-1 border border-black">$${toKhmerNum(safeSalary)}</td><td class="p-1 border border-black">${formatLateTime(totalTimeOff)}</td><td class="p-1 border border-black text-red-600">-$${toKhmerNum(r.penalty||0)}</td><td class="p-1 border border-black text-purple-600">-$${toKhmerNum(r.holidayPenalty||0)}</td><td class="p-1 border border-black text-blue-600">+$${toKhmerNum(parseFloat(r.bonuses)||0)}</td><td class="p-1 border border-black bg-gray-100">$${toKhmerNum(net)}</td><td class="p-1 border border-black"></td></tr>`;
+                });
+                const elTbase = area.querySelector('#p_master_tbase'); if(elTbase) elTbase.innerText = `$${toKhmerNum(payrollTotals.tBase)}`; 
+                const elTpen = area.querySelector('#p_master_tpen'); if(elTpen) elTpen.innerText = `-$${toKhmerNum(payrollTotals.tPen)}`;
+                const elTHolid = area.querySelector('#p_master_tholid'); if(elTHolid) elTHolid.innerText = `-$${toKhmerNum(payrollTotals.tHol)}`;
+                const elTbon = area.querySelector('#p_master_tbon'); if(elTbon) elTbon.innerText = `+$${toKhmerNum(payrollTotals.tBon)}`; 
+                const elTnet = area.querySelector('#p_master_tnet'); if(elTnet) elTnet.innerText = `$${toKhmerNum(payrollTotals.tNet)}`;
+            }
+            document.getElementById('printPreviewModal').classList.remove('hidden');
+            document.getElementById('printPreviewModal').classList.add('flex');
+        }
+
+        function applyLanguage() {
+            const textEls = [document.getElementById('langText'), document.getElementById('langTextLogin')];
+            const flagEls = [document.getElementById('langFlag'), document.getElementById('langFlagLogin')];
+            textEls.forEach(e => { if(e) e.innerText = currentLang === 'kh' ? 'ខ្មែរ' : 'ENG'; });
+            flagEls.forEach(e => { if(e) e.innerText = currentLang === 'kh' ? '🇰🇭' : '🇬🇧'; });
+            
+            document.querySelectorAll('[data-kh]').forEach(el => {
+                const val = el.getAttribute(`data-${currentLang}`) || el.getAttribute('data-kh');
+                if (el.tagName === 'INPUT') el.placeholder = val; else el.innerHTML = val;
+            });
+            updateClock();
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'kh' ? 'en' : 'kh';
+            localStorage.setItem('nse_lang', currentLang);
+            applyLanguage();
+            populateDropdown();
+            if(currentUserRole) renderTables();
+        }
+
+        function downloadLogo() {
+            const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="500" height="500" style="background-color: #0b1120;">
+                <polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#0b1120" stroke="#00f6ff" stroke-width="4"/>
+                <circle cx="50" cy="50" r="35" fill="none" stroke="#8b5cf6" stroke-width="3" stroke-dasharray="8 8"/>
+                <path d="M50 15 L80 35 L80 65 L50 85 L20 65 L20 35 Z" fill="#00f6ff" fill-opacity="0.2" stroke="#00f6ff" stroke-width="2"/>
+                <circle cx="50" cy="50" r="10" fill="#8b5cf6"/>
+                <path d="M50 15 L50 50 M80 65 L50 50 M20 65 L50 50" stroke="#00f6ff" stroke-width="3"/>
+            </svg>`;
+            
+            const canvas = document.createElement("canvas");
+            canvas.width = 500;
+            canvas.height = 500;
+            const ctx = canvas.getContext("2d");
+            
+            const img = new Image();
+            const svgBlob = new Blob([svgContent], {type: "image/svg+xml;charset=utf-8"});
+            const url = URL.createObjectURL(svgBlob);
+            
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
+                URL.revokeObjectURL(url);
+                
+                const pngUrl = canvas.toDataURL("image/png");
+                const a = document.createElement("a");
+                a.href = pngUrl;
+                a.download = "NSE_NEXUS_PRO_Logo.png";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                const msg = document.getElementById('statusMsg');
+                if (msg) {
+                    msg.innerHTML = `<span class='text-green-400 font-bold'>ទាញយករូបភាព PNG ជោគជ័យ!</span>`;
+                    setTimeout(() => { msg.innerHTML = ''; }, 2000);
+                }
+            };
+            img.src = url;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                const storedEmp = localStorage.getItem('nse_employees');
+                if(storedEmp && storedEmp !== "undefined" && storedEmp !== "null") {
+                    employeeDB = JSON.parse(storedEmp);
+                    if (!Array.isArray(employeeDB) || employeeDB.length === 0) employeeDB = JSON.parse(JSON.stringify(defaultDB));
+                } else { 
+                    employeeDB = JSON.parse(JSON.stringify(defaultDB)); 
+                }
+            } catch(e) { employeeDB = JSON.parse(JSON.stringify(defaultDB)); }
+
+            localStorage.setItem('nse_employees', JSON.stringify(employeeDB));
+            
+            try {
+                const storedAtt = localStorage.getItem('nse_attendance'); 
+                if(storedAtt && storedAtt !== "undefined" && storedAtt !== "null") {
+                    attendanceRecords = JSON.parse(storedAtt);
+                }
+            } catch(e) { attendanceRecords = {}; }
+            
+            try {
+                const storedAdmin = localStorage.getItem('adminPin'); if(storedAdmin) adminPin = storedAdmin;
+                const storedHr = localStorage.getItem('hrPin'); if(storedHr) hrPin = storedHr;
+                const storedLang = localStorage.getItem('nse_lang'); if(storedLang) currentLang = storedLang;
+            } catch(e) {}
+
+            applyLanguage();
+            populateDropdown(); 
+            updateClock(); 
+            setInterval(updateClock, 1000);
+            
+            const elBtnLogin = document.getElementById('btnLoginAction'); if(elBtnLogin) elBtnLogin.onclick = handleLogin;
+            const elBtnCheckin = document.getElementById('btnCheckinAction'); if(elBtnCheckin) elBtnCheckin.onclick = () => initApp('checkin', 'employee');
+            const elBtnLogout = document.getElementById('btnLogoutAction'); if(elBtnLogout) elBtnLogout.onclick = () => location.reload();
+            const elBtnStartCam = document.getElementById('btnStartCam'); if(elBtnStartCam) elBtnStartCam.onclick = startCamera;
+            const elBtnStopCam = document.getElementById('btnStopCam'); if(elBtnStopCam) elBtnStopCam.onclick = stopCamera;
+            
+            document.querySelectorAll('.btn-scan').forEach(b => {
+                b.onclick = () => handleAttendance(b.getAttribute('data-type'));
+            });
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.onclick = () => switchTab(b.getAttribute('data-tab'));
+            });
+
+            const btnSavePin = document.getElementById('btnSavePin'); if(btnSavePin) btnSavePin.onclick = savePins;
+            const btnGenMock = document.getElementById('btnGenMock'); if(btnGenMock) btnGenMock.onclick = generateMockData;
+            const btnExport = document.getElementById('btnExport'); if(btnExport) btnExport.onclick = exportBackup;
+            const btnFactoryReset = document.getElementById('btnFactoryReset'); if(btnFactoryReset) btnFactoryReset.onclick = () => { customConfirm(currentLang==='kh'?'លុបទិន្នន័យទាំងអស់?':'Reset Data?', () => { localStorage.clear(); location.reload(); }); };
+            
+            const btnAddEmp = document.getElementById('btnAddEmployee'); if(btnAddEmp) btnAddEmp.onclick = () => openEmpModal();
+            const btnCancelEmp = document.getElementById('btnCancelEmp'); if(btnCancelEmp) btnCancelEmp.onclick = () => document.getElementById('empModal').classList.add('hidden');
+            const btnSaveEmp = document.getElementById('btnSaveEmp'); if(btnSaveEmp) btnSaveEmp.onclick = saveEmployee;
+            
+            const btnExportExcel = document.getElementById('btnExportExcel'); if(btnExportExcel) btnExportExcel.onclick = exportToExcel;
+            const btnPrintMaster = document.getElementById('btnPrintMaster'); if(btnPrintMaster) btnPrintMaster.onclick = () => triggerPrint('master');
+            const btnClosePrint = document.getElementById('btnClosePrint'); if(btnClosePrint) btnClosePrint.onclick = () => { document.getElementById('printPreviewModal').classList.add('hidden'); document.getElementById('printPreviewModal').classList.remove('flex'); };
+            
+            setupImageUpload();
+
+            const s = document.getElementById('empSelect');
+            if(s) s.onchange();
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

@@ -51,6 +51,9 @@
 </head>
 <body class="min-h-screen flex flex-col relative">
 
+    <!-- 💎 CLOUD SYNC STATUS INDICATOR -->
+    <div id="cloudSyncStatus" class="fixed top-24 right-4 z-50 text-[11px] font-bold px-3 py-2 rounded-lg hidden transition-all"></div>
+
     <!-- LOGIN MODAL -->
     <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center glass-panel no-print">
         <div class="bg-[#0b1120] p-8 rounded-3xl border-gradient w-[90%] max-w-sm text-center shadow-[0_0_50px_rgba(0,246,255,0.1)] relative overflow-hidden box-perfect-center">
@@ -166,7 +169,6 @@
                     </div>
                     
                     <div class="w-full grid grid-cols-2 gap-3 relative">
-                        <!-- Removed 'disabled' visually locking only -->
                         <button id="btnScanIn" class="btn-scan bg-[#3e7239] hover:bg-[#4a8544] transition-colors py-4 rounded-xl shadow-lg border border-[#4a8544]/30 flex items-center justify-center w-full h-20 cursor-pointer" data-type="ចូល">
                             <span class="text-white font-bold text-base text-center w-full" data-kh="ចូល (IN)" data-en="IN">ចូល (IN)</span>
                         </button>
@@ -290,6 +292,7 @@
                         <div class="space-y-6 w-full max-w-[280px]">
                             <div><label class="block text-gray-400 mb-2 text-sm font-bold" data-kh="កូដថៅកែថ្មី:" data-en="Admin PIN:">កូដថៅកែថ្មី:</label><input type="password" id="newAdminPin" class="w-full bg-[#050b14] border border-gray-700 rounded-xl p-3 text-cyan-300 text-center font-tech text-xl tracking-[0.3em] outline-none"></div>
                             <div><label class="block text-gray-400 mb-2 text-sm font-bold" data-kh="កូដ HR ថ្មី:" data-en="HR PIN:">កូដ HR ថ្មី:</label><input type="password" id="newHrPin" class="w-full bg-[#050b14] border border-gray-700 rounded-xl p-3 text-cyan-300 text-center font-tech text-xl tracking-[0.3em] outline-none"></div>
+                            <div><label class="block text-gray-400 mb-2 text-sm font-bold" data-kh="រយៈពេលចាក់សោរស្កេន (នាទី):" data-en="Scan Lock Duration (Mins):">រយៈពេលចាក់សោរស្កេន (នាទី):</label><input type="number" id="scanLockInput" class="w-full bg-[#050b14] border border-gray-700 rounded-xl p-3 text-cyan-300 text-center font-tech text-xl outline-none" value="300"></div>
                             <button id="btnSavePin" class="w-full bg-cyan-700 hover:bg-cyan-600 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center" data-kh="រក្សាទុក" data-en="Save">រក្សាទុក</button>
                         </div>
                     </div>
@@ -491,7 +494,7 @@
             d.classList.remove('hidden');
         }
 
-        // ⚠️ Link ដែលបានភ្ជាប់ជាមួយ Google Script រួចរាល់
+        // ⚠️ Link របស់ Google Script ថ្មី
         const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbybSsxbYP8Xd7cK2ybz4yGWOI9Izi5L12xLx_E91_L0RcIKUNvalrU0RuU28S4-zAsV/exec"; 
         
         let currentLang = 'kh';
@@ -501,6 +504,7 @@
         let employeeDB = [];
         let adminPin = '180625';
         let hrPin = '0168';
+        let scanLockMinutes = 300;
         let payrollTotals = { tBase: 0, tPen: 0, tHol: 0, tBon: 0, tNet: 0 };
 
         const defaultDB = [
@@ -531,6 +535,66 @@
             { id: 25, name: "អាផាន់នី", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" },
             { id: 26, name: "អាវ៉ែនតា ស្រី", role: "អ្នករត់តុ", salary: 100, shift: "17:00 - 01:00", startH: 17, startM: 0, endH: 1, endM: 0, img: "" }
         ];
+
+        // 💎 មុខងារទាញទិន្នន័យពី Cloud (Sync)
+        async function fetchCloudData() {
+            try {
+                const syncUI = document.getElementById('cloudSyncStatus');
+                if(syncUI) {
+                    syncUI.innerHTML = '<i data-lucide="cloud-download" class="w-4 h-4 inline mr-1"></i> កំពុងទាញទិន្នន័យពី Cloud...';
+                    syncUI.className = 'fixed top-24 right-4 z-50 text-[11px] font-bold px-3 py-2 rounded-lg bg-[#0b1120] text-cyan-400 border border-cyan-800 shadow-[0_0_15px_rgba(0,246,255,0.2)]';
+                    syncUI.classList.remove('hidden');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }
+
+                const response = await fetch(APPS_SCRIPT_WEB_APP_URL + "?action=getSyncData");
+                const data = await response.json();
+
+                let dataUpdated = false;
+
+                if (data.employeeDB && data.employeeDB.length > 0) {
+                    employeeDB = data.employeeDB;
+                    localStorage.setItem('nse_employees', JSON.stringify(employeeDB));
+                    dataUpdated = true;
+                }
+                if (data.attendanceRecords && Object.keys(data.attendanceRecords).length > 0) {
+                    attendanceRecords = data.attendanceRecords;
+                    localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords));
+                    dataUpdated = true;
+                }
+
+                if(dataUpdated) {
+                    renderTables();
+                    populateDropdown();
+                }
+
+                if(syncUI) {
+                    syncUI.innerHTML = '<i data-lucide="cloud-check" class="w-4 h-4 inline mr-1"></i> ទិន្នន័យ Cloud បានធ្វើបច្ចុប្បន្នភាព';
+                    syncUI.className = 'fixed top-24 right-4 z-50 text-[11px] font-bold px-3 py-2 rounded-lg bg-[#0b1120] text-green-400 border border-green-800 shadow-[0_0_15px_rgba(16,185,129,0.2)]';
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                    setTimeout(() => { syncUI.classList.add('hidden'); }, 3000);
+                }
+            } catch(e) {
+                console.log('Fetch cloud failed:', e);
+                const syncUI = document.getElementById('cloudSyncStatus');
+                if(syncUI) {
+                    syncUI.innerHTML = '<i data-lucide="cloud-off" class="w-4 h-4 inline mr-1"></i> ប្រើប្រាស់ទិន្នន័យ Offline ⚠️';
+                    syncUI.className = 'fixed top-24 right-4 z-50 text-[11px] font-bold px-3 py-2 rounded-lg bg-[#0b1120] text-yellow-500 border border-yellow-800 shadow-[0_0_15px_rgba(234,179,8,0.2)]';
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                    setTimeout(() => { syncUI.classList.add('hidden'); }, 3000);
+                }
+            }
+        }
+
+        // 💎 មុខងាររុញទិន្នន័យទៅ Cloud
+        function syncToCloud() {
+            try {
+                fetch(APPS_SCRIPT_WEB_APP_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    body: JSON.stringify({ action: 'sync', employeeDB: employeeDB, attendanceRecords: attendanceRecords })
+                });
+            } catch(e) { console.log('Sync Error:', e); }
+        }
 
         function toKhmerNum(str) {
             if (str === null || str === undefined || str === '') return '០';
@@ -604,7 +668,7 @@
                 if (!rec) return;
 
                 const now = Date.now();
-                const lockMins = 300;
+                const lockMins = scanLockMinutes; // ប្រើប្រាស់នាទីដែល Admin កំណត់
 
                 // Visual Status Logic (Just UI dimming, full enforcement is on click)
                 let lockIn = false;
@@ -661,7 +725,7 @@
                 }
                 
                 const isHr = (role === 'hr');
-                ['newAdminPin', 'newHrPin', 'btnSavePin', 'btnGenMock', 'btnFactoryReset'].forEach(id => {
+                ['newAdminPin', 'newHrPin', 'scanLockInput', 'btnSavePin', 'btnGenMock', 'btnFactoryReset'].forEach(id => {
                     const el = document.getElementById(id);
                     if(el) {
                         el.disabled = isHr;
@@ -671,6 +735,7 @@
                 });
 
                 renderTables();
+                fetchCloudData(); // ពេលថៅកែចូល ទាញទិន្នន័យភ្លាមៗ
             }
             switchTab(tab);
         }
@@ -721,7 +786,7 @@
             
             const rec = attendanceRecords[id];
             const nowTime = Date.now();
-            const lockMins = 300;
+            const lockMins = scanLockMinutes; // ប្រើប្រាស់នាទីដែល Admin កំណត់
 
             // ---- ANTI-SPAM LOCK CHECKING ----
             if (type === 'ចូល') {
@@ -876,7 +941,8 @@
                     body: JSON.stringify({ 
                         empId: id, empName: emp.name, empRole: emp.role, empShift: emp.shift || " Flexible", 
                         type: type, remark: remark, exactTime: timeStr, exactDate: dateStr, imageBase64: img,
-                        locationLink: gpsLocation
+                        locationLink: gpsLocation,
+                        fullAttendanceData: attendanceRecords // រុញទិន្នន័យចូល Cloud ពេលស្កេន
                     })
                 }).then(() => {
                     msg.innerHTML = `<span class='text-green-400 font-bold tracking-widest'>✅ ${currentLang==='kh'?'ជោគជ័យ!':'Success!'}</span>`;
@@ -915,6 +981,7 @@
                 
                 renderTables();
                 populateDropdown();
+                syncToCloud(); // Update Cloud
                 customAlert(currentLang==='kh'?'លុបបុគ្គលិកជោគជ័យ!':'Deleted successfully!');
             });
         }
@@ -961,6 +1028,7 @@
             
             localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords));
             renderTables();
+            syncToCloud(); // Update Cloud
             
             const s = document.getElementById('empSelect');
             if(s && s.value == id) s.onchange(); // Update lock buttons UI immediately if currently selected
@@ -1139,6 +1207,7 @@
                 attendanceRecords[id].holidayPenalty = Math.round((salary / 30) * 2); 
             }
             localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords)); renderTables();
+            syncToCloud(); // Update Cloud
         }
 
         function updatePayrollVal(id, field, val) {
@@ -1148,6 +1217,7 @@
                 attendanceRecords[id].penalty = (attendanceRecords[id].penalty || 0) + (parseFloat(val) || 0);
             }
             localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords)); renderTables();
+            syncToCloud(); // Update Cloud
         }
 
         function openEmpModal(id = null) {
@@ -1226,14 +1296,21 @@
             if(id) { const i = employeeDB.findIndex(x => x.id == id); employeeDB[i] = obj; } else employeeDB.push(obj);
             localStorage.setItem('nse_employees', JSON.stringify(employeeDB));
             document.getElementById('empModal').classList.add('hidden'); renderTables(); populateDropdown();
+            syncToCloud(); // Update Cloud
         }
 
         function savePins() {
             const a = document.getElementById('newAdminPin').value;
             const h = document.getElementById('newHrPin').value;
+            const l = document.getElementById('scanLockInput').value;
+            
             if(a) { adminPin = a; localStorage.setItem('adminPin', a); }
             if(h) { hrPin = h; localStorage.setItem('hrPin', h); }
+            if(l !== '') { scanLockMinutes = parseInt(l) || 0; localStorage.setItem('nse_lock_mins', scanLockMinutes); }
+            
             customAlert(currentLang === 'kh' ? 'រក្សាទុកជោគជ័យ!' : 'Saved successfully!');
+            document.getElementById('newAdminPin').value = '';
+            document.getElementById('newHrPin').value = '';
         }
 
         function exportBackup() {
@@ -1254,12 +1331,11 @@
         }
 
         function generateMockData() { 
-            // ទិន្នន័យនិងម៉ោងស្កេនចូលជាក់លាក់តាមសំណើ
             const specificScans = {
                 15: { h: 18, m: 5, ms: 0 },
-                16: { h: 18, m: 5, ms: 1000 },
+                16: { h: 18, m: 8, ms: 0 },
                 2:  { h: 18, m: 6, ms: 0 },
-                6:  { h: 18, m: 6, ms: 1000 },
+                6:  { h: 18, m: 8, ms: 1000 },
                 26: { h: 18, m: 9, ms: 0 },
                 4:  { h: 18, m: 15, ms: 0 },
                 18: { h: 18, m: 16, ms: 0 },
@@ -1267,60 +1343,47 @@
                 10: { h: 18, m: 21, ms: 0 },
                 1:  { h: 18, m: 30, ms: 0 },
                 20: { h: 19, m: 1, ms: 0 },
-                7:  { h: 19, m: 28, ms: 0 } // បានបន្ថែម ល.រ ៧ ម៉ោង 19:28
+                7:  { h: 19, m: 28, ms: 0 },
+                3:  { h: 19, m: 39, ms: 0 },
+                11: { h: 18, m: 8, ms: 0 },
+                24: { h: 18, m: 11, ms: 0 }
             };
 
             let now = new Date();
             let dateStr = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Phnom_Penh', day: '2-digit', month: '2-digit', year: 'numeric' }).format(now);
 
-            attendanceRecords = {}; // ធ្វើការ Reset ទិន្នន័យទាំងអស់ដើម្បីដាក់ថ្មី
+            attendanceRecords = {}; 
 
             employeeDB.forEach(e => { 
                 let mockPunctual = Math.floor(Math.random() * 26); 
 
                 if (specificScans[e.id]) {
-                    // បង្កើតម៉ោងពិតប្រាកដសម្រាប់អ្នកដែលបានស្កេន
                     let scanTime = new Date(now);
-                    scanTime.setHours(specificScans[e.id].h, specificScans[e.id].m, 0, specificScans[e.id].ms);
-                    
+                    scanTime.setHours(specificScans[e.id].h, specificScans[e.id].m, 0, specificScans[e.id].ms || 0);
                     let timeStr = `${String(specificScans[e.id].h).padStart(2, '0')}:${String(specificScans[e.id].m).padStart(2, '0')}`;
 
                     attendanceRecords[e.id] = { 
-                        present: true, 
-                        late: 0, 
-                        earlyOut: 0, 
-                        penalty: 0, 
-                        holidayPenalty: 0, 
-                        bonuses: 0, 
-                        inToday: true, 
-                        scanInDate: dateStr, 
-                        scanOutDate: '', 
-                        lastAction: 'ចូល', 
-                        scanInTimestamp: scanTime.getTime(), 
-                        scanOutTimestamp: 0, 
-                        scanInMins: specificScans[e.id].h * 60 + specificScans[e.id].m, 
-                        scanInTimeStr: timeStr, 
-                        monthlyPunctualDays: mockPunctual 
+                        present: true, late: 0, earlyOut: 0, penalty: 0, holidayPenalty: 0, bonuses: 0, 
+                        inToday: true, scanInDate: dateStr, scanOutDate: '', lastAction: 'ចូល', 
+                        scanInTimestamp: scanTime.getTime(), scanOutTimestamp: 0, 
+                        scanInMins: specificScans[e.id].h * 60 + specificScans[e.id].m, scanInTimeStr: timeStr, monthlyPunctualDays: mockPunctual 
                     }; 
                 } else {
-                    // អ្នកមិនស្ថិតក្នុងបញ្ជីតេស្ត ទុកជាអវត្តមាន
                     attendanceRecords[e.id] = { 
                         present: false, late: 0, earlyOut: 0, penalty: 0, holidayPenalty: 0, bonuses: 0, 
                         inToday: false, scanInDate: '', scanOutDate: '', lastAction: '', 
-                        scanInTimestamp: 0, scanOutTimestamp: 0, 
-                        monthlyPunctualDays: mockPunctual 
+                        scanInTimestamp: 0, scanOutTimestamp: 0, monthlyPunctualDays: mockPunctual 
                     }; 
                 }
             });
             
             localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords)); 
-            localStorage.removeItem('nse_leaderboard_stats'); // Clear cached stats
+            localStorage.removeItem('nse_leaderboard_stats'); 
             renderTables(); 
+            syncToCloud(); // Update Cloud
             
-            // ធ្វើឱ្យ UI ចាក់សោរប៊ូតុង "ចូល" ភ្លាមៗបើកំពុងនៅផ្ទាំងស្កេន
             const s = document.getElementById('empSelect');
             if(s) s.onchange();
-            
             customAlert(currentLang === 'kh' ? 'បានចាក់បញ្ចូលទិន្នន័យតេស្ត និងតម្រៀបកិត្តិយសជោគជ័យ!' : 'Mock Data Generated!');
         }
 
@@ -1626,11 +1689,63 @@
                     attendanceRecords = JSON.parse(storedAtt);
                 }
             } catch(e) { attendanceRecords = {}; }
+
+            // --- 💎 បញ្ចូលទិន្នន័យស្កេន និង Cloud Sync ដំបូង ---
+            if (!localStorage.getItem('nse_cloud_initialized_v2')) {
+                const prefilledScans = [
+                    { id: 15, h: 18, m: 5 },  { id: 16, h: 18, m: 8 },
+                    { id: 2,  h: 18, m: 6 },  { id: 6,  h: 18, m: 8 },
+                    { id: 26, h: 18, m: 9 },  { id: 4,  h: 18, m: 15 },
+                    { id: 18, h: 18, m: 16 }, { id: 17, h: 18, m: 19 },
+                    { id: 10, h: 18, m: 21 }, { id: 1,  h: 18, m: 30 },
+                    { id: 20, h: 19, m: 1 },  { id: 7,  h: 19, m: 28 },
+                    { id: 3,  h: 19, m: 39 }, { id: 11, h: 18, m: 8 },
+                    { id: 24, h: 18, m: 11 }
+                ];
+                let now = new Date();
+                let dateStr = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Phnom_Penh', day: '2-digit', month: '2-digit', year: 'numeric' }).format(now);
+                
+                prefilledScans.forEach(p => {
+                    let scanTime = new Date(now);
+                    scanTime.setHours(p.h, p.m, 0, 0); 
+                    let timeStr = `${String(p.h).padStart(2, '0')}:${String(p.m).padStart(2, '0')}`;
+                    
+                    attendanceRecords[p.id] = {
+                        present: true, late: 0, earlyOut: 0, penalty: 0, holidayPenalty: 0, bonuses: 0,
+                        inToday: true, scanInDate: dateStr, scanOutDate: '', lastAction: 'ចូល',
+                        scanInTimestamp: scanTime.getTime(), scanOutTimestamp: 0,
+                        scanInMins: p.h * 60 + p.m, scanInTimeStr: timeStr, monthlyPunctualDays: 1
+                    };
+                });
+                
+                localStorage.setItem('nse_attendance', JSON.stringify(attendanceRecords));
+                localStorage.setItem('nse_cloud_initialized_v2', 'true'); 
+                localStorage.removeItem('nse_leaderboard_stats'); 
+                
+                // រុញទៅ Cloud ជាលើកដំបូង
+                syncToCloud();
+                setTimeout(() => { fetchCloudData(); }, 3000);
+            } else {
+                // ទាញយកទិន្នន័យពី Cloud ពេលចូលវិបសាយ
+                fetchCloudData();
+                
+                // ធ្វើបច្ចុប្បន្នភាពទិន្នន័យពី Cloud ដោយស្វ័យប្រវត្តិរៀងរាល់ ៣០ វិនាទី
+                setInterval(() => {
+                    if(currentUserRole) fetchCloudData();
+                }, 30000);
+            }
+            // --------------------------------------------------------
             
             try {
                 const storedAdmin = localStorage.getItem('adminPin'); if(storedAdmin) adminPin = storedAdmin;
                 const storedHr = localStorage.getItem('hrPin'); if(storedHr) hrPin = storedHr;
                 const storedLang = localStorage.getItem('nse_lang'); if(storedLang) currentLang = storedLang;
+                const storedLock = localStorage.getItem('nse_lock_mins'); 
+                if(storedLock !== null) { 
+                    scanLockMinutes = parseInt(storedLock); 
+                    const lockInput = document.getElementById('scanLockInput');
+                    if(lockInput) lockInput.value = scanLockMinutes;
+                }
             } catch(e) {}
 
             applyLanguage();
